@@ -7,13 +7,20 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class GameHandler implements Runnable{
@@ -39,6 +46,9 @@ public class GameHandler implements Runnable{
     public boolean gameStarted = false;
 
     private final MineralTeam[] teams = new MineralTeam[4];
+    private final Map<Location, Integer> ecLocationTeamID = new HashMap<>(4);
+
+    public Map<Material, Integer> scoreMap = new HashMap<>();
 
     public GameHandler(World world, int durationSec, int firstChestDelay, int chestPeriod, int finalHeight) {
         gameWorld = world;
@@ -46,6 +56,18 @@ public class GameHandler implements Runnable{
         nextChest = durationSec - firstChestDelay;
         CHEST_PERIOD = chestPeriod;
         groundHeight = finalHeight;
+        Arrays.fill(teams, new MineralTeam());
+
+        ecLocationTeamID.put(new Location(gameWorld, -59, groundHeight+3, 0), 0);
+        ecLocationTeamID.put(new Location(gameWorld, 59, groundHeight+3, 0), 1);
+        ecLocationTeamID.put(new Location(gameWorld, 0, groundHeight+3, -59), 2);
+        ecLocationTeamID.put(new Location(gameWorld, 0, groundHeight+3, 59), 3);
+
+        scoreMap.put(Material.IRON_INGOT, 10);
+        scoreMap.put(Material.GOLD_INGOT, 50);
+        scoreMap.put(Material.DIAMOND, 150);
+        scoreMap.put(Material.EMERALD, 300);
+
         schedulerTask = Bukkit.getScheduler().runTaskTimer(plugin, this, 20, 20);
     }
 
@@ -91,6 +113,12 @@ public class GameHandler implements Runnable{
                     player.hideBossBar(gameBar);
                     nextChest -= CHEST_PERIOD;
                     gameWorld.getBlockAt(0, groundHeight - 11, 0).setType(Material.CHEST);
+                    BlockState state = gameWorld.getBlockAt(0, groundHeight - 11, 0).getState();
+                    if (state instanceof Chest) {
+                        Chest chest = (Chest) state;
+                        Inventory inventory = chest.getInventory();
+                        inventory.setItem(13, new ItemStack(Material.PAPER));
+                    }
                 }
             }
         }
@@ -102,5 +130,21 @@ public class GameHandler implements Runnable{
                         Style.style(TextColor.color(NamedTextColor.AQUA)))
                 .append(Component.text(time,
                         Style.style(TextColor.color(NamedTextColor.BLUE))));
+    }
+
+    public int getTeamID(Player player) {
+        for (int i = 0; i < teams.length; i++) {
+            if (teams[i].playerInTeam(player)) return i;
+        }
+        return -1;
+    }
+
+    public int getTeamID(Location enderChestLocation) {
+        if (!ecLocationTeamID.containsKey(enderChestLocation)) return -1;
+        return ecLocationTeamID.get(enderChestLocation);
+    }
+
+    public MineralTeam getTeam(int id) {
+        return teams[id];
     }
 }
