@@ -1,45 +1,51 @@
 package me.viciscat.mineralcontest;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class MineralTeam {
 
-    private final Player[] players = new Player[4];
-
-    public int playerCount = 0;
+    private final List<UUID> players = new ArrayList<>();
 
     public int getScore() {
         return score;
     }
-
     public void setScore(int score) {
         this.score = score;
     }
-
     public void addScore(int score) {
         this.score += score;
     }
-
     public int score = 0;
 
     public boolean addPlayer(Player player) {
-        if (playerCount >= 4) return false;
+        if (players.size() >= 4) return false;
         if (!player.isOnline()) return false;
-        players[playerCount] = player;
+        if (playerInTeam(player.getUniqueId())) return false;
+        players.add(player.getUniqueId());
         return true;
     }
 
-    public Player[] getPlayers() {
+    public boolean removePlayer(Player player) {
+        return players.remove(player.getUniqueId());
+    }
+
+    public List<UUID> getPlayerUUID() {
         return players;
     }
 
     public int getPlayerCount() {
-        return playerCount;
+        return players.size();
     }
 
     public boolean playerInTeam(Player player) {
-        return ArrayUtils.contains(players, player);
+        return players.contains(player.getUniqueId());
+    }
+    public boolean playerInTeam(UUID playerUUID) {
+        return players.contains(playerUUID);
     }
 
 }

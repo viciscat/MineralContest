@@ -43,9 +43,19 @@ public class MCCommandHandler implements CommandExecutor {
             }
             case "debug" -> {
                 if (!plugin.gameHandlerMap.containsKey(player.getWorld())) return false;
+                GameHandler gameHandler = plugin.gameHandlerMap.get(player.getWorld());
                 switch (args[1]) {
                     case "timer" -> {
-                        sender.sendPlainMessage(String.valueOf(plugin.gameHandlerMap.get(player.getWorld()).getSecondsLeft()));
+                        sender.sendPlainMessage(String.valueOf(gameHandler.getSecondsLeft()));
+                        return true;
+                    }
+                    case "team" -> {
+                        sender.sendPlainMessage(String.valueOf(gameHandler.getTeamID(player)));
+                        return true;
+                    }
+                    case "score" -> {
+                        int teamID = gameHandler.getTeamID(player);
+                        sender.sendPlainMessage(String.valueOf(gameHandler.getTeam(teamID).getScore()));
                         return true;
                     }
                     default -> {

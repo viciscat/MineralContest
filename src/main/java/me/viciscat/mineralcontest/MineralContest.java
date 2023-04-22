@@ -1,10 +1,12 @@
 package me.viciscat.mineralcontest;
 
 import me.viciscat.mineralcontest.commands.MCCommandHandler;
+import me.viciscat.mineralcontest.commands.TabCompletion;
 import me.viciscat.mineralcontest.commands.testing2Command;
 import me.viciscat.mineralcontest.commands.testingCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
@@ -39,7 +41,10 @@ public final class MineralContest extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MineralListener(), this);
         Objects.requireNonNull(getCommand("test")).setExecutor(new testingCommand());
         Objects.requireNonNull(getCommand("test2")).setExecutor(new testing2Command());
-        Objects.requireNonNull(getCommand("mineralcontest")).setExecutor(new MCCommandHandler());
+        PluginCommand mainCommand = getCommand("mineralcontest");
+        assert mainCommand != null;
+        mainCommand.setExecutor(new MCCommandHandler());
+        mainCommand.setTabCompleter(new TabCompletion());
 
     }
 
