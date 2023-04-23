@@ -83,6 +83,7 @@ public class MineralListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) return;
         ItemStack item = new ItemStack(Material.COMPASS);
         if (!player.getInventory().getItemInMainHand().equals(item)) return;
+
         event.setCancelled(true);
         GameHandler gameHandler = map.get(player.getWorld());
         TeamSelectUI.openUI(player, gameHandler);
@@ -93,12 +94,28 @@ public class MineralListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return; // Is it a player?
         if (!map.containsKey(player.getWorld())) return;
-        if (event.getClickedInventory().getHolder() == null) return;
-        if (event.getClickedInventory().getHolder() instanceof TeamSelectUI.Holder) {
+        Inventory inventory = event.getInventory();
+        if (inventory.getHolder() == null) return;
+        if (inventory.getHolder() instanceof TeamSelectUI.Holder) {
             GameHandler gameHandler = map.get(player.getWorld());
             event.setCancelled(true);
-            if (event.getRawSlot() == 10) {
-                gameHandler.getTeam(0).addPlayer(player);
+            int slot = event.getRawSlot();
+            if (slot >= 10 && slot <= 16 && slot%2==0) {
+                int teamID = (slot - 10) / 2;
+                // If player already in the clicked team
+                if (gameHandler.getTeam(teamID).playerInTeam(player)) {
+                    player.sendMessage(Component.text("You are already in this team buckaroo!"));
+                    return;
+                }
+                // Leave previous team
+                int oldTeamID = gameHandler.getTeamID(player);
+                if (oldTeamID != -1) { gameHandler.getTeam(oldTeamID).removePlayer(player); }
+                // Send message and join new team
+                player.sendMessage(Component.text("You joined the ")
+                        .append(Component.text(TeamSelectUI.teamColors[teamID], TeamSelectUI.textColors[teamID]))
+                        .append(Component.text(" team!")));
+                gameHandler.getTeam(teamID).addPlayer(player);
+
             }
         }
     }

@@ -153,7 +153,7 @@ public class GameCreator {
                 int z_min = -80 + SMOOTH_DISTANCE;
                 int z_max = 80 - SMOOTH_DISTANCE;
                 // logger.info(i + " " + j + " " + x_min + " " + x_max + " " + z_min + " " + z_max);
-                for (int k = final_height; k < highest + 5; k++) {
+                for (int k = highest + 5; k >= final_height; k--) {
                     if (k == final_height && i > x_min && i < x_max && j > z_min && j < z_max) {
                         world.getBlockAt(i, k, j).setType(Material.GRASS_BLOCK); // TODO: Adapt this depending on biome, example: sand in desert
                     } else {
@@ -187,7 +187,7 @@ public class GameCreator {
 
     private void smooth_side(int final_height, boolean isXAxis, boolean isPositive) {
         for (int i = -80; i < 80; i++) {
-            int smoothing = (int) (((noiseGenerator.noise(i/10d) + 1)/2) * EXTRA_SMOOTH_DISTANCE);
+            int smoothing = (int) (((noiseGenerator.noise(i/8d) + 1)/2) * EXTRA_SMOOTH_DISTANCE);
 
             int multiplier = isPositive ? 1: -1; // -1 if on negative side of axis
             int side_height = getHighestNonTreeBlockYAt(
