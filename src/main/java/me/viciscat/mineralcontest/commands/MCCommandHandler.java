@@ -1,8 +1,13 @@
 package me.viciscat.mineralcontest.commands;
 
-import me.viciscat.mineralcontest.GameHandler;
+import me.viciscat.mineralcontest.MineralListener;
+import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
 import me.viciscat.mineralcontest.commands.sub.GameCreator;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -67,8 +72,28 @@ public class MCCommandHandler implements CommandExecutor {
             case "start" -> {
                 if (!plugin.gameHandlerMap.containsKey(player.getWorld())) return false;
                 GameHandler handler = plugin.gameHandlerMap.get(player.getWorld());
-                handler.startGame();
+                handler.startClassSelection();
                 return true;
+            }
+            case "join" -> {
+                if (args.length == 1) {
+                    sender.sendPlainMessage("Format: /mineralcontest join <Game Name>");
+                    return false;
+                }
+                World requestedWorld = Bukkit.getWorld(args[1]);
+                if (requestedWorld == null || !MineralContest.getInstance().gameHandlerMap.containsKey(requestedWorld)) {
+                    sender.sendPlainMessage("This game doesn't exist!!");
+                    return false;
+                }
+                GameHandler gameHandler = MineralContest.getInstance().gameHandlerMap.get(requestedWorld);
+                Location tpLocation = new Location(requestedWorld, -25, gameHandler.groundHeight + 1, 0);
+                if (gameHandler.gamePhase != GameHandler.Phase.PREGAME) {
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
+                player.teleport(tpLocation);
+                return true;
+
+
             }
             default -> {
                 return false;

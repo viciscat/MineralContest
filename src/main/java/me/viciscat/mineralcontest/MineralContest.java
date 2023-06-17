@@ -4,6 +4,7 @@ import me.viciscat.mineralcontest.commands.MCCommandHandler;
 import me.viciscat.mineralcontest.commands.TabCompletion;
 import me.viciscat.mineralcontest.commands.testing2Command;
 import me.viciscat.mineralcontest.commands.testingCommand;
+import me.viciscat.mineralcontest.game.GameHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;

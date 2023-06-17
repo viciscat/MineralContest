@@ -21,16 +21,27 @@ public class MineralTeam {
     }
     public int score = 0;
 
-    public boolean addPlayer(Player player) {
-        if (players.size() >= 4) return false;
-        if (!player.isOnline()) return false;
-        if (playerInTeam(player.getUniqueId())) return false;
+
+    public float getScoreMultiplier() {
+        return scoreMultiplier;
+    }
+    public void setScoreMultiplier(float scoreMultiplier) {
+        this.scoreMultiplier = scoreMultiplier;
+    }
+    public void addScoreMultiplier(float scoreMultiplier) {
+        this.scoreMultiplier += scoreMultiplier;
+    }
+    public float scoreMultiplier = 1;
+
+    public void addPlayer(Player player) {
+        if (players.size() >= 4) return;
+        if (!player.isOnline()) return;
+        if (playerInTeam(player.getUniqueId())) return;
         players.add(player.getUniqueId());
-        return true;
     }
 
-    public boolean removePlayer(Player player) {
-        return players.remove(player.getUniqueId());
+    public void removePlayer(Player player) {
+        players.remove(player.getUniqueId());
     }
 
     public List<UUID> getPlayerUUID() {

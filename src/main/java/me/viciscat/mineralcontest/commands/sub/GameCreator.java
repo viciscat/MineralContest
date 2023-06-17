@@ -1,16 +1,17 @@
 package me.viciscat.mineralcontest.commands.sub;
 
-import me.viciscat.mineralcontest.GameHandler;
+import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.command.CommandSender;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.entity.Player;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
 
 import java.util.ArrayList;
@@ -119,6 +120,8 @@ public class GameCreator {
     public GameCreator() {}
 
     public boolean createGame(String worldName, CommandSender sender) {
+        if (!(sender instanceof Player)) return false;
+        Player playerSender = (Player) sender;
         // Create and generate the world
 
         boolean result = findWorld(worldName);
@@ -179,8 +182,17 @@ public class GameCreator {
         plugin.structureMap.get("castle_yellow").place(new Location(world, -10, final_height-1, -68), false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
         plugin.structureMap.get("castle_green").place(new Location(world, -10, final_height-1, 22), false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
 
+        world.getWorldBorder().setCenter(0, 0);
+        world.getWorldBorder().setSize(80);
+        world.setSpawnLocation(0, final_height, 0);
+        for (Player player : ((Player) sender).getWorld().getPlayers()) {
+            player.sendMessage(playerSender.displayName().color(NamedTextColor.DARK_AQUA).append(
+                    Component.text(" create a mineral contest! Join here: ")
+            ).append(
+                    Component.text("/mineralcontest join " + worldName).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + worldName)).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
+            ));
+        }
         plugin.gameHandlerMap.put(world, new GameHandler(world, 3600, 60, 900, final_height));
-        sender.getServer().broadcast(Component.text("Done!").clickEvent(ClickEvent.suggestCommand("/execute in minecraft:" + world.getName() + " run tp @s 0 100 0")));
         return true;
     }
 

@@ -1,9 +1,10 @@
-package me.viciscat.mineralcontest;
+package me.viciscat.mineralcontest.ui;
 
+import me.viciscat.mineralcontest.MineralTeam;
+import me.viciscat.mineralcontest.game.GameHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -67,7 +68,7 @@ public class TeamSelectUI {
         player.openInventory(inventory);
     }
 
-    static class Holder implements InventoryHolder {
+    static public class Holder implements InventoryHolder {
 
         /**
          * Get the object's inventory.
