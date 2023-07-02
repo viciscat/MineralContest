@@ -1,9 +1,10 @@
 package me.viciscat.mineralcontest.commands;
 
-import me.viciscat.mineralcontest.MineralListener;
+import me.viciscat.mineralcontest.MineralTeam;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
 import me.viciscat.mineralcontest.commands.sub.GameCreator;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -13,6 +14,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class MCCommandHandler implements CommandExecutor {
 
@@ -31,8 +34,7 @@ public class MCCommandHandler implements CommandExecutor {
      */
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player)) return false;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return false;
         if (args.length == 0) {
             sender.sendPlainMessage("Command Format: /mineralcontest <create|...>");
             return false;
@@ -55,12 +57,15 @@ public class MCCommandHandler implements CommandExecutor {
                         return true;
                     }
                     case "team" -> {
-                        sender.sendPlainMessage(String.valueOf(gameHandler.getTeamID(player)));
+                        MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
+                        Component teamName = mineralTeam == null ? Component.text("None") : mineralTeam.getTeamName();
+                        sender.sendMessage(teamName);
+                        sender.sendPlainMessage(Objects.requireNonNull(gameHandler.gameScoreboard.getPlayerTeam(player)).getName());
                         return true;
                     }
                     case "score" -> {
-                        int teamID = gameHandler.getTeamID(player);
-                        sender.sendPlainMessage(String.valueOf(gameHandler.getTeam(teamID).getScore()));
+                        MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
+                        sender.sendPlainMessage(mineralTeam == null ? "-1" : String.valueOf(mineralTeam.getScore()));
                         return true;
                     }
                     default -> {

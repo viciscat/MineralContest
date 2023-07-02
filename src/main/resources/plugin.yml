@@ -3,15 +3,22 @@ version: '${project.version}'
 main: me.viciscat.mineralcontest.MineralContest
 api-version: 1.19
 commands:
-  test:
-    description: Testing command
-    usage: /<command>
-    permission: mineral-contest.testpermission
   test2:
     description: Testing command AGAIN
     usage: /<command>
     permission: mineral-contest.frickyou
   mineralcontest:
     description: Where all the things are done with this plugin
+    aliases:
+      - mcontest
     usage: /mineralcontest <subcommand>
     permission: mineral-contest.command
+  arena:
+    description: Teleport your team to the arena!
+    aliases:
+      - arene
+    usage: /arena. You MUST be in a Mineral Contest game
+    permission: mineral-contest.arena
+permissions:
+  mineral-contest.arena:
+    default: true

@@ -1,11 +1,11 @@
 package me.viciscat.mineralcontest.game;
 
-import org.bukkit.entity.Player;
+import me.viciscat.mineralcontest.MineralPlayer;
+import me.viciscat.mineralcontest.MineralTeam;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Random;
-import java.util.UUID;
 
 public class ClassSelectingPhase {
 
@@ -15,9 +15,9 @@ public class ClassSelectingPhase {
         Random r = new Random();
         if (gameHandler.classSelectSecondsLeft < 0) {
             gameHandler.startGame();
-            for (Player player : gameHandler.gameWorld.getPlayers()) {
-                if (gameHandler.getPlayerClass(player) == null) {
-                    gameHandler.setClass(player, classes[r.nextInt(5)]);
+            for (MineralPlayer mineralPlayer: gameHandler.playerManager.getPlayers()) {
+                if (mineralPlayer.ClassString() == null) {
+                    mineralPlayer.ClassString(classes[r.nextInt(5)]);
                 }
             }
         }
@@ -28,12 +28,12 @@ public class ClassSelectingPhase {
         int minutes = game.classSelectSecondsLeft / 60;
         int seconds = game.classSelectSecondsLeft % 60;
 
-        for (Player player : game.gameWorld.getPlayers()) {
-            UUID uuid = player.getUniqueId();
-            String teamString = game.getTeamString(player);
-            String classString = game.getPlayerClass(player);
+        for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
+            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+            String teamString = mineralTeam == null ? "None" : mineralTeam.getTeamNameScoreboard();
+            String classString = mineralPlayer.ClassString();
 
-            Scoreboard scoreboard = game.playerScoreboards.get(uuid);
+            Scoreboard scoreboard = mineralPlayer.PlayerScoreboard();
             Objective objective = scoreboard.getObjective("mineral_contest_gui");
 
             if (objective != null) {

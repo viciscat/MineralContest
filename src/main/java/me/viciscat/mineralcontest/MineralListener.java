@@ -1,10 +1,12 @@
 package me.viciscat.mineralcontest;
 
 import me.viciscat.mineralcontest.game.GameHandler;
+import me.viciscat.mineralcontest.game.RespawnPeriod;
 import me.viciscat.mineralcontest.ui.ClassSelectUI;
 import me.viciscat.mineralcontest.ui.TeamSelectUI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -16,25 +18,21 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDropItemEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scoreboard.Criteria;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BoundingBox;
 
 import java.util.Map;
@@ -65,13 +63,22 @@ public class MineralListener implements Listener {
         Inventory inventory = event.getInventory();
         GameHandler gameHandler = map.get(player.getWorld());
 
-        if (!inventory.getType().equals(InventoryType.ENDER_CHEST)) return; // Is it an EC ?
         if (inventory.getLocation() == null) return;
-        if (gameHandler.getTeamID(inventory.getLocation()) == -1) return;
-        int chestTeamID = gameHandler.getTeamID(inventory.getLocation());
-        int playerTeamID = gameHandler.getTeamID(player);
+        if (!inventory.getType().equals(InventoryType.ENDER_CHEST)) {
+            if (inventory.getType().equals(InventoryType.CHEST)) {
+                Location arenaChestLocation = new Location(player.getWorld(), 0, gameHandler.groundHeight - 11, 0);
+                if (inventory.getLocation().equals(arenaChestLocation)) {
+                    if (inventory.isEmpty()) {
+                        player.getWorld().getBlockAt(arenaChestLocation).setType(Material.AIR);
+                    }
+                }
+            }
+        } // Is it an EC ?
+        MineralTeam chestTeam = gameHandler.getTeam(inventory.getLocation());
+        if (chestTeam == null) return;
+        MineralTeam playerTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
         Inventory playerInventory = player.getInventory();
-        if (playerTeamID == -1 || chestTeamID != playerTeamID) {
+        if (playerTeam == null || chestTeam != playerTeam) {
             for (ItemStack item : inventory.getStorageContents()) {
                 if (item != null) { playerInventory.addItem(item); }
             }
@@ -87,13 +94,8 @@ public class MineralListener implements Listener {
                 inventory.remove(itemStack);
             }
         }
-        MineralTeam team =  gameHandler.getTeam(playerTeamID);
-        finalScore *= team.getScoreMultiplier();
-        team.addScore(finalScore);
-
-        Location location = inventory.getLocation();
-        player.sendMessage(Component.text("You closed an enderchest! Is it one of the castle's one? Who knows cuz this hasn't been implemented yet!!"));
-        player.sendMessage(Component.text(location.getX() + " " + location.getY() + " " + location.getZ()));
+        finalScore *= playerTeam.getScoreMultiplier();
+        playerTeam.addScore(finalScore);
 
 
     }
@@ -126,36 +128,50 @@ public class MineralListener implements Listener {
         Inventory inventory = event.getInventory();
         InventoryHolder holder = inventory.getHolder();
         if (holder == null) return;
+        int rawSlot = event.getRawSlot();
         if (holder instanceof TeamSelectUI.Holder) {
             // TEAM SELECTION
             GameHandler gameHandler = map.get(player.getWorld());
             event.setCancelled(true);
-            int slot = event.getRawSlot();
-            if (slot >= 10 && slot <= 16 && slot%2==0) {
-                int teamID = (slot - 10) / 2;
+            if (rawSlot >= 10 && rawSlot <= 16 && rawSlot%2==0) {
+                int teamID = (rawSlot - 10) / 2;
                 // If player already in the clicked team
-                if (gameHandler.getTeam(teamID).playerInTeam(player)) {
+                MineralTeam team = gameHandler.getTeam(teamID);
+                assert team != null;
+                MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(player);
+                if (team.playerInTeam(mineralPlayer)) {
                     player.sendMessage(Component.text("You are already in this team buckaroo!"));
                     return;
                 }
+                Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(MineralContest.class), () -> TeamSelectUI.openUI(player, gameHandler, inventory));
                 // Leave previous team
-                int oldTeamID = gameHandler.getTeamID(player);
-                if (oldTeamID != -1) { gameHandler.getTeam(oldTeamID).removePlayer(player); }
+                MineralTeam oldTeam = mineralPlayer.MineralTeam();
+
+                if (oldTeam != null) { oldTeam.removePlayer(mineralPlayer); }
                 // Send message and join new team
                 player.sendMessage(Component.text("You joined the ")
                         .append(Component.text(TeamSelectUI.teamColors[teamID], TeamSelectUI.textColors[teamID]))
                         .append(Component.text(" team!")));
-                gameHandler.getTeam(teamID).addPlayer(player);
+                team.addPlayer(mineralPlayer);
 
             }
         } else if (holder instanceof ClassSelectUI.Holder) {
             // CLASS SELECTION
             GameHandler gameHandler = map.get(player.getWorld());
+            MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(player);
             event.setCancelled(true);
-            int slot = event.getRawSlot();
-            int classID = slot - 11;
-            if (classID > 4) return;
-            gameHandler.setClass(player, classes[classID]);
+            int classID = rawSlot - 11;
+            if (classID > 4 || classID < 0) return;
+            mineralPlayer.ClassString(classes[classID]);
+        } else if (event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            // MINER CLASS OR SOMETHING
+            int slot = event.getSlot();
+            GameHandler gameHandler = map.get(player.getWorld());
+            MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(player);
+            if (!(Objects.equals(mineralPlayer.ClassString(), "miner"))) return;
+            if (slot >= 9 && slot <= 17) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -166,7 +182,7 @@ public class MineralListener implements Listener {
 
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
-        if (!(Objects.equals(gameHandler.getPlayerClass(player), "warrior"))) return;
+        if (!(Objects.equals(gameHandler.playerManager.getPlayer(player).ClassString(), "warrior"))) return;
         event.setDamage(event.getDamage() * 1.25);
 
     }
@@ -177,7 +193,7 @@ public class MineralListener implements Listener {
 
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
-       switch (gameHandler.getPlayerClass(player)) {
+        switch (gameHandler.playerManager.getPlayer(player).ClassString()) {
             case "robust" -> event.setDamage(event.getDamage() * 0.85);
             case "agile" -> {
                if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) event.setCancelled(true);
@@ -187,24 +203,33 @@ public class MineralListener implements Listener {
 
     }
 
+
+
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
+        player.sendMessage("hi");
         if (!map.containsKey(player.getWorld())) {
-            AttributeInstance speedAttr = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-            assert speedAttr != null;
-            speedAttr.removeModifier(new AttributeModifier("mineralcontest_agile", 0.2, AttributeModifier.Operation.MULTIPLY_SCALAR_1));
+            player.sendMessage("hello");
+            AttributeInstance[] attributeInstances = new AttributeInstance[]{
+                    player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED),
+                    player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+            };
+
+            for (AttributeInstance attributeInstance : attributeInstances) {
+                assert attributeInstance != null;
+                for (AttributeModifier modifier : attributeInstance.getModifiers()) {
+                    player.sendMessage(modifier.getName());
+                    if (modifier.getName().contains("mineralcontest")) {
+                        attributeInstance.removeModifier(modifier);
+                    }
+                }
+            }
+
             return;
         }
         GameHandler gameHandler = map.get(player.getWorld());
-        // Create scoreboard if player has no scoreboard
-        gameHandler.playerScoreboards.computeIfAbsent(player.getUniqueId(), k -> {
-            Scoreboard newScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-            Objective newObjective = newScoreboard.registerNewObjective("mineral_contest_gui", Criteria.DUMMY, Component.text("Mineral Contest").decoration(TextDecoration.BOLD, true).color(NamedTextColor.DARK_AQUA));
-            newObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
-            player.setScoreboard(newScoreboard);
-            return newScoreboard;
-        });
+
         // Update scoreboard
         gameHandler.resetPlayerScoreboard(player);
         if (gameHandler.gamePhase == GameHandler.Phase.PREGAME) {
@@ -212,33 +237,119 @@ public class MineralListener implements Listener {
             playerInventory.clear();
             ItemStack compass = new ItemStack(Material.COMPASS);
             ItemMeta compassMeta = compass.getItemMeta();
+            compassMeta.getPersistentDataContainer().set(NamespacedKey.fromString("selection_item", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
             compassMeta.displayName(Component.text("Right click to select your team!").decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false));
             compass.setItemMeta(compassMeta);
             playerInventory.setItem(8, compass);
+            player.setGameMode(GameMode.ADVENTURE);
 
             gameHandler.pregameTeam.addPlayer(player);
         }
     }
     @EventHandler
     public void onBlockDropItem(BlockDropItemEvent event) {
+        // TODO: Test this shit, use getSlot instead of getRawSlot and check shit idk
         Player player = event.getPlayer();
-        if (!player.getGameMode().equals(GameMode.CREATIVE)) return;
+        if (player.getGameMode().equals(GameMode.CREATIVE)) return;
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
-        if (!gameHandler.getPlayerClass(player).equals("miner")) return;
-        if (!player.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
+        if (!gameHandler.playerManager.getPlayer(player).ClassString().equals("miner")) return;
+        if (player.getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH)) return;
         Material materialToDrop;
-        switch (event.getBlock().getType()) {
-            case GOLD_ORE -> materialToDrop = Material.GOLD_INGOT;
-            case IRON_ORE -> materialToDrop = Material.IRON_INGOT;
+        Material originalMaterial;
+        switch (event.getBlockState().getType()) {
+            case GOLD_ORE -> {
+                materialToDrop = Material.GOLD_INGOT;
+                originalMaterial = Material.RAW_GOLD;
+            }
+            case IRON_ORE -> {
+                materialToDrop = Material.IRON_INGOT;
+                originalMaterial = Material.RAW_IRON;
+            }
             default -> {
                 return;
             }
         }
         for (Item item : event.getItems()) {
-            if (item.getItemStack().getType().equals(materialToDrop)) {
+            player.sendMessage(Component.text(item.getItemStack().getType().toString()));
+            if (item.getItemStack().getType().equals(originalMaterial)) {
                 item.getItemStack().setType(materialToDrop);
             }
+        }
+    }
+
+    @EventHandler
+    public void onBlockDamage(BlockDamageEvent event) {
+        Player player = event.getPlayer();
+        if (player.getGameMode().equals(GameMode.CREATIVE)) return;
+        if (!map.containsKey(player.getWorld())) return;
+        GameHandler gameHandler = map.get(player.getWorld());
+        Location location = event.getBlock().getLocation();
+        if (isLocationNoGood(location, gameHandler.groundHeight)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        if (player.getGameMode().equals(GameMode.CREATIVE)) return;
+        if (!map.containsKey(player.getWorld())) return;
+        GameHandler gameHandler = map.get(player.getWorld());
+        Location location = event.getBlock().getLocation();
+        if (isLocationNoGood(location, gameHandler.groundHeight)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean isLocationNoGood(Location location, int groundHeight) {
+        boolean inX = location.getX() <= 75 && location.getX() >= -75;
+        boolean inZ = location.getZ() <= 75 && location.getZ() >= -75;
+        boolean inY = location.getY() <= 255 && location.getY() >= groundHeight - 2;
+
+        boolean inArenaX = location.getX() <= 18 && location.getX() >= -18;
+        boolean inArenaZ = location.getZ() <= 18 && location.getZ() >= -18;
+        boolean inArenaY = location.getY() <= groundHeight && location.getY() >= groundHeight - 15;
+        return (inX && inZ && inY) || (inArenaX && inArenaY && inArenaZ);
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        if (!map.containsKey(player.getWorld())) return;
+        GameHandler gameHandler = map.get(player.getWorld());
+        player.setGameMode(GameMode.SPECTATOR);
+        new RespawnPeriod(player, gameHandler);
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (!event.hasChangedPosition()) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+        if (!map.containsKey(player.getWorld())) return;
+        GameHandler gameHandler = map.get(player.getWorld());
+        if (gameHandler.isInEnemyCastle(gameHandler.playerManager.getPlayer(player).MineralTeam(), event.getTo())) {
+            event.setCancelled(true);
+            player.sendMessage(Component.text("C'est pas ton chateau !!", TextColor.color(NamedTextColor.DARK_RED)));
+        }
+        // player.sendMessage(" from ", event.getFrom().toString(), " to ", event.getTo().toString());
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event){
+        Player player = event.getPlayer();
+        onPlayerChangedWorld(new PlayerChangedWorldEvent(player, player.getWorld()));
+        if (!map.containsKey(player.getWorld())) return;
+        player.setHealth(0);
+    }
+
+    @EventHandler
+    public void onDropItem(PlayerDropItemEvent event){
+        Player player = event.getPlayer();
+        if (!map.containsKey(player.getWorld())) return;
+        if (event.getItemDrop().getItemStack().getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("selection_item", MineralContest.getInstance()))){
+            event.setCancelled(true);
         }
     }
 }

@@ -1,9 +1,9 @@
 package me.viciscat.mineralcontest;
 
+import me.viciscat.mineralcontest.commands.ArenaCommand;
 import me.viciscat.mineralcontest.commands.MCCommandHandler;
 import me.viciscat.mineralcontest.commands.TabCompletion;
 import me.viciscat.mineralcontest.commands.testing2Command;
-import me.viciscat.mineralcontest.commands.testingCommand;
 import me.viciscat.mineralcontest.game.GameHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -40,12 +40,14 @@ public final class MineralContest extends JavaPlugin {
             throw new RuntimeException(e);
         }
         getServer().getPluginManager().registerEvents(new MineralListener(), this);
-        Objects.requireNonNull(getCommand("test")).setExecutor(new testingCommand());
         Objects.requireNonNull(getCommand("test2")).setExecutor(new testing2Command());
         PluginCommand mainCommand = getCommand("mineralcontest");
         assert mainCommand != null;
         mainCommand.setExecutor(new MCCommandHandler());
         mainCommand.setTabCompleter(new TabCompletion());
+        PluginCommand slashArena = getCommand("arena");
+        assert slashArena != null;
+        slashArena.setExecutor(new ArenaCommand());
 
     }
 

@@ -1,10 +1,9 @@
 package me.viciscat.mineralcontest.game;
 
-import org.bukkit.entity.Player;
+import me.viciscat.mineralcontest.MineralPlayer;
+import me.viciscat.mineralcontest.MineralTeam;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-
-import java.util.UUID;
 
 public class PreGamePhase {
 
@@ -13,11 +12,11 @@ public class PreGamePhase {
     }
 
     static void updatePlayerScoreboards(GameHandler game) {
-        for (Player player : game.gameWorld.getPlayers()) {
-            UUID uuid = player.getUniqueId();
-            String teamString = game.getTeamString(player);
+        for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
+            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+            String teamString = mineralTeam == null ? "None" : mineralTeam.getTeamNameScoreboard();
 
-            Scoreboard scoreboard = game.playerScoreboards.get(uuid);
+            Scoreboard scoreboard = mineralPlayer.PlayerScoreboard();
             Objective objective = scoreboard.getObjective("mineral_contest_gui");
 
             if (objective != null) {

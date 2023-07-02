@@ -72,6 +72,7 @@ public class GameCreator {
     private boolean findWorld(String worldName) {
         Random random = new Random();
         WorldCreator creator = new WorldCreator(worldName);
+        creator.generateStructures(false);
         World world1 = null;
         List<Integer> heights1 = new ArrayList<>();
         int oceanBiomeNumber;
@@ -120,8 +121,7 @@ public class GameCreator {
     public GameCreator() {}
 
     public boolean createGame(String worldName, CommandSender sender) {
-        if (!(sender instanceof Player)) return false;
-        Player playerSender = (Player) sender;
+        if (!(sender instanceof Player playerSender)) return false;
         // Create and generate the world
 
         boolean result = findWorld(worldName);
@@ -185,6 +185,7 @@ public class GameCreator {
         world.getWorldBorder().setCenter(0, 0);
         world.getWorldBorder().setSize(80);
         world.setSpawnLocation(0, final_height, 0);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
         for (Player player : ((Player) sender).getWorld().getPlayers()) {
             player.sendMessage(playerSender.displayName().color(NamedTextColor.DARK_AQUA).append(
                     Component.text(" create a mineral contest! Join here: ")
@@ -192,7 +193,7 @@ public class GameCreator {
                     Component.text("/mineralcontest join " + worldName).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + worldName)).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
             ));
         }
-        plugin.gameHandlerMap.put(world, new GameHandler(world, 3600, 60, 900, final_height));
+        plugin.gameHandlerMap.put(world, new GameHandler(world, 600, 60, 900, final_height));
         return true;
     }
 

@@ -27,7 +27,10 @@ public class TeamSelectUI {
     public final static String[] teamColors = new String[] {"RED", "BLUE", "YELLOW", "GREEN"};
 
     public static void openUI(Player player, GameHandler gameHandler) {
-        Inventory inventory = Bukkit.createInventory(new TeamSelectUI.Holder(), 27, Component.text("Select your team!"));
+        openUI(player, gameHandler, Bukkit.createInventory(new TeamSelectUI.Holder(), 27, Component.text("Select your team!")));
+    }
+
+    public static void openUI(Player player, GameHandler gameHandler, Inventory inventory) {
         for (int i = 0; i < 10; i++) {
             ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
             ItemMeta glassMeta = glass.getItemMeta();
@@ -42,7 +45,8 @@ public class TeamSelectUI {
             ItemMeta woolMeta = itemStack.getItemMeta();
             woolMeta.displayName(Component.text(teamColors[i]).append(Component.text(" TEAM")).decoration(TextDecoration.ITALIC, false));
             MineralTeam team = gameHandler.getTeam(i);
-            if (team.playerInTeam(player)) {
+            assert team != null;
+            if (team.playerInTeam(gameHandler.playerManager.getPlayer(player))) {
                 woolMeta.addEnchant(Enchantment.DURABILITY, 1, false);
                 woolMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
