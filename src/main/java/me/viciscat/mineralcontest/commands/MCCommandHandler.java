@@ -12,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +42,10 @@ public class MCCommandHandler implements CommandExecutor {
         }
         switch (args[0]) {
             case "create" -> {
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
                 if (args.length == 1) {
                     sender.sendPlainMessage("Format: /mineralcontest create <World Name>");
                     return false;
@@ -50,6 +55,10 @@ public class MCCommandHandler implements CommandExecutor {
             }
             case "debug" -> {
                 if (!plugin.gameHandlerMap.containsKey(player.getWorld())) return false;
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
                 GameHandler gameHandler = plugin.gameHandlerMap.get(player.getWorld());
                 switch (args[1]) {
                     case "timer" -> {
@@ -75,12 +84,20 @@ public class MCCommandHandler implements CommandExecutor {
                 }
             }
             case "start" -> {
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
                 if (!plugin.gameHandlerMap.containsKey(player.getWorld())) return false;
                 GameHandler handler = plugin.gameHandlerMap.get(player.getWorld());
                 handler.startClassSelection();
                 return true;
             }
             case "join" -> {
+                if (!sender.hasPermission("mineral-contest.join")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
                 if (args.length == 1) {
                     sender.sendPlainMessage("Format: /mineralcontest join <Game Name>");
                     return false;
@@ -100,9 +117,46 @@ public class MCCommandHandler implements CommandExecutor {
 
 
             }
+            case "reload" -> {
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
+                MineralContest.instance.actuallyReloadConfig();
+                return true;
+            }
+            case "config" -> {
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
+                if (args.length == 1) {
+                    sender.sendPlainMessage("Format: /mineralcontest config <config thing> <new value>");
+                    return false;
+                }
+                FileConfiguration configuration = plugin.config;
+                if (args.length == 2) {
+                    Object object =  configuration.get(args[1]);
+                    sender.sendPlainMessage(object == null ? "null": object.toString());
+                    return true;
+                }
+                Object object =  configuration.get(args[1]);
+                if (object instanceof Integer) {
+                    try {
+                        configuration.set(args[1], Integer.valueOf(args[2]));
+                    } catch (NumberFormatException e) {
+                        sender.sendPlainMessage("THIS SHIT AIN'T AN INT");
+                        return true;
+                    }
+                    sender.sendPlainMessage("THINGY HAS BEEN SET! don't forget to do /mcontest reload");
+                    plugin.saveConfig();
+                    return true;
+                }
+            }
             default -> {
                 return false;
             }
         }
+        return false;
     }
 }

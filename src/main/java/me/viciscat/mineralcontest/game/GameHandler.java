@@ -44,7 +44,7 @@ public class GameHandler implements Runnable{
     }
 
     int secondsLeft; // seconds left till the end of the game
-    int classSelectSecondsLeft = 36; // seconds left till the end of the game
+    int classSelectSecondsLeft = 45; // seconds left till the end class selection CRAZY
     int nextChest; // Time when next chest spawns
 
     public int getNextChest() {
@@ -74,6 +74,7 @@ public class GameHandler implements Runnable{
     public GameHandler(World world, int durationSec, int firstChestDelay, int chestPeriod, int finalHeight) {
         gameWorld = world;
         gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        gameWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         secondsLeft = durationSec;
         nextChest = durationSec - firstChestDelay;
         CHEST_PERIOD = chestPeriod;
@@ -165,7 +166,11 @@ public class GameHandler implements Runnable{
                 player.setFoodLevel(20);
                 player.setSaturation(20);
                 player.setGameMode(GameMode.SURVIVAL);
-                player.getInventory().setItem(0, new ItemStack(Material.COOKED_BEEF, 16));
+                player.getInventory().addItem(
+                        new ItemStack(Material.STONE_SWORD),
+                        new ItemStack(Material.BOW),
+                        new ItemStack(Material.ARROW, 32),
+                        new ItemStack(Material.COOKED_BEEF, 16));
             }
         }
         for (Player player : gameWorld.getPlayers()) {
@@ -321,7 +326,6 @@ public class GameHandler implements Runnable{
         if (team == null) return false;
         for (MineralTeam mineralTeam : teams) {
             if (mineralTeam.BoundingBox().contains(location.toVector()) && mineralTeam != team) {
-                logger.info("HE IS IN THE CASTLE AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 return true;}
         }
         return false;

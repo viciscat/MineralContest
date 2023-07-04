@@ -182,6 +182,15 @@ public class MineralListener implements Listener {
 
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
+        if (event.getEntity() instanceof Player attackedPlayer) {
+            boolean inSameTeam = gameHandler.playerManager.getPlayer(attackedPlayer).MineralTeam() == gameHandler.playerManager.getPlayer(player).MineralTeam();
+            boolean inPreGame = gameHandler.gamePhase == GameHandler.Phase.PREGAME;
+            boolean inPostGame = gameHandler.getSecondsLeft() <= 0;
+            if (inSameTeam || inPreGame || inPostGame) {
+                event.setCancelled(true);
+                return;
+            }
+        }
         if (!(Objects.equals(gameHandler.playerManager.getPlayer(player).ClassString(), "warrior"))) return;
         event.setDamage(event.getDamage() * 1.25);
 
@@ -248,7 +257,6 @@ public class MineralListener implements Listener {
     }
     @EventHandler
     public void onBlockDropItem(BlockDropItemEvent event) {
-        // TODO: Test this shit, use getSlot instead of getRawSlot and check shit idk
         Player player = event.getPlayer();
         if (player.getGameMode().equals(GameMode.CREATIVE)) return;
         if (!map.containsKey(player.getWorld())) return;
@@ -266,12 +274,15 @@ public class MineralListener implements Listener {
                 materialToDrop = Material.IRON_INGOT;
                 originalMaterial = Material.RAW_IRON;
             }
+            case COPPER_ORE -> {
+                materialToDrop = Material.COPPER_INGOT;
+                originalMaterial = Material.RAW_COPPER;
+            }
             default -> {
                 return;
             }
         }
         for (Item item : event.getItems()) {
-            player.sendMessage(Component.text(item.getItemStack().getType().toString()));
             if (item.getItemStack().getType().equals(originalMaterial)) {
                 item.getItemStack().setType(materialToDrop);
             }
@@ -341,6 +352,8 @@ public class MineralListener implements Listener {
         Player player = event.getPlayer();
         onPlayerChangedWorld(new PlayerChangedWorldEvent(player, player.getWorld()));
         if (!map.containsKey(player.getWorld())) return;
+        GameHandler gameHandler = map.get(player.getWorld());
+        if (gameHandler.gamePhase == GameHandler.Phase.PREGAME || gameHandler.gamePhase == GameHandler.Phase.CLASS_SELECTING) return;
         player.setHealth(0);
     }
 

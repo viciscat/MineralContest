@@ -9,7 +9,9 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -42,13 +44,14 @@ public class RespawnPeriod extends BukkitRunnable {
             respawningPlayer.setGameMode(GameMode.SURVIVAL);
             MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(respawningPlayer).MineralTeam();
             respawningPlayer.teleport(mineralTeam == null ? new Location(gameHandler.gameWorld, 0, gameHandler.groundHeight + 15, 0) : mineralTeam.getSpawnLocation());
+            respawningPlayer.getInventory().addItem(new ItemStack(Material.WOODEN_SWORD));
             cancel();
 
             return;
         }
         respawningPlayer.showTitle(Title.title(
-                Component.text("Tu es mort sale noub", Style.style(TextColor.color(NamedTextColor.DARK_RED))),
-                Component.text("Tu vas réaparaitre comme par magie dans ", Style.style(TextColor.color(NamedTextColor.GOLD))).append(
+                Component.text("Tu es mort", Style.style(TextColor.color(NamedTextColor.DARK_RED))),
+                Component.text("Tu vas respawn dans ", Style.style(TextColor.color(NamedTextColor.GOLD))).append(
                         Component.text(time, TextColor.color(NamedTextColor.YELLOW))).append(
                                 Component.text(" secondes !", TextColor.color(NamedTextColor.GOLD))
                 ), Title.Times.times(Duration.ZERO, Duration.ofSeconds(2), Duration.ZERO)));

@@ -1,5 +1,6 @@
 package me.viciscat.mineralcontest.commands;
 
+import me.viciscat.mineralcontest.MineralContest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -26,11 +27,21 @@ public class TabCompletion implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!command.getName().equals("mineralcontest")) return null;
+        List<String> returnList = new ArrayList<>();
         if (args.length == 1) {
-            List<String> returnList = new ArrayList<>();
-            returnList.add("create");
-            returnList.add("debug");
-            returnList.add("start");
+            if (sender.hasPermission("mineral-contest.admin")) {
+                returnList.add("create");
+                returnList.add("debug");
+                returnList.add("start");
+                returnList.add("reload");
+                return returnList;
+            }
+            returnList.add("join");
+            return returnList;
+        } else if (args.length == 2) {
+            if (args[0].equals("config")) {
+                returnList.addAll(MineralContest.instance.config.getKeys(false));
+            }
             return returnList;
         }
         return null;

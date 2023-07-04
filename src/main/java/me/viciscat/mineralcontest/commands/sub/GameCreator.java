@@ -188,12 +188,16 @@ public class GameCreator {
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
         for (Player player : ((Player) sender).getWorld().getPlayers()) {
             player.sendMessage(playerSender.displayName().color(NamedTextColor.DARK_AQUA).append(
-                    Component.text(" create a mineral contest! Join here: ")
+                    Component.text(" created a mineral contest! Join here: ")
             ).append(
                     Component.text("/mineralcontest join " + worldName).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + worldName)).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
             ));
         }
-        plugin.gameHandlerMap.put(world, new GameHandler(world, 600, 60, 900, final_height));
+        int gameDuration = plugin.config.getInt("gameDuration", 3600);
+        int firstChestDelay = plugin.config.getInt("firstChestDelay", 900);
+        int chestPeriod = plugin.config.getInt("chestPeriod", 1200);
+        plugin.gameHandlerMap.put(world, new GameHandler(world, gameDuration, firstChestDelay, chestPeriod, final_height));
+        sender.sendPlainMessage("Game created with settings: " + gameDuration + " " + firstChestDelay + " " + chestPeriod);
         return true;
     }
 

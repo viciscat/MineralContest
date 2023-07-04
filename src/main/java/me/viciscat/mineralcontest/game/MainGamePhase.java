@@ -58,9 +58,9 @@ public class MainGamePhase {
 
 
             if (secBeforeChest == 0) {
+                game.nextChest -= game.CHEST_PERIOD;
                 for (Player player : game.gameWorld.getPlayers()) {
                     player.hideBossBar(game.gameBar);
-                    game.nextChest -= game.CHEST_PERIOD;
                     // spawn the funni chest
                     game.gameWorld.getBlockAt(0, game.groundHeight - 11, 0).setType(Material.CHEST);
                     BlockState state = game.gameWorld.getBlockAt(0, game.groundHeight - 11, 0).getState();

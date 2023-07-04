@@ -22,3 +22,9 @@ commands:
 permissions:
   mineral-contest.arena:
     default: true
+  mineral-contest.join:
+    default: true
+  mineral-contest.admin:
+    default: op
+  mineral-contest.command:
+    default: true

@@ -8,6 +8,7 @@ import me.viciscat.mineralcontest.game.GameHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
@@ -22,6 +23,8 @@ public final class MineralContest extends JavaPlugin {
     public StructureManager structureManager;
     public Map<String, Structure> structureMap = new HashMap<>();
     public Map<World, GameHandler> gameHandlerMap = new HashMap<>();
+
+    public FileConfiguration config = getConfig();
 
     @Override
     public void onEnable() {
@@ -49,6 +52,12 @@ public final class MineralContest extends JavaPlugin {
         assert slashArena != null;
         slashArena.setExecutor(new ArenaCommand());
 
+        config.addDefault("gameDuration", 3600);
+        config.addDefault("firstChestDelay", 900);
+        config.addDefault("chestPeriod", 1200);
+        config.options().copyDefaults(true);
+        saveConfig();
+
     }
 
     @Override
@@ -56,7 +65,12 @@ public final class MineralContest extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    static MineralContest instance;
+    static public MineralContest instance;
     public MineralContest() {instance = this;}
     public static MineralContest getInstance() {return instance;}
+
+    public void actuallyReloadConfig() {
+        reloadConfig();
+        config = getConfig();
+    }
 }
