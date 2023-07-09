@@ -1,10 +1,13 @@
 package me.viciscat.mineralcontest;
 
+import io.papermc.paper.event.entity.EntityMoveEvent;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.game.RespawnPeriod;
 import me.viciscat.mineralcontest.ui.ClassSelectUI;
 import me.viciscat.mineralcontest.ui.TeamSelectUI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -13,19 +16,20 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -78,9 +82,10 @@ public class MineralListener implements Listener {
         if (chestTeam == null) return;
         MineralTeam playerTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
         Inventory playerInventory = player.getInventory();
+        // Wrong Team
         if (playerTeam == null || chestTeam != playerTeam) {
             for (ItemStack item : inventory.getStorageContents()) {
-                if (item != null) { playerInventory.addItem(item); }
+                if (item != null) { playerInventory.addItem(item); } // Return Item
             }
 
             inventory.clear();
@@ -88,15 +93,34 @@ public class MineralListener implements Listener {
             return;
         }
         int finalScore = 0;
+        int scoreToRemove = 0;
         for (ItemStack itemStack : inventory.getContents()) {
             if (itemStack == null) { finalScore += 0; } else {
                 finalScore += gameHandler.scoreMap.getOrDefault(itemStack.getType(), 0) * itemStack.getAmount();
                 inventory.remove(itemStack);
+                if (itemStack.getType() == Material.REDSTONE) {
+                    scoreToRemove += itemStack.getAmount();
+                }
+                else if (!gameHandler.scoreMap.containsKey(itemStack.getType())) {
+                    playerInventory.addItem(itemStack); // If invalid item return it
+                }
             }
         }
         finalScore *= playerTeam.getScoreMultiplier();
         playerTeam.addScore(finalScore);
+        if (scoreToRemove <= 0) return;
+        playerTeam.sendMessage(Component.text("Your team removed " + scoreToRemove + " points from other teams!"));
+        for (MineralTeam team : gameHandler.getTeams()) {
+            if (!team.playerInTeam(player.getUniqueId())) {
+                team.setScore(team.getScore() - scoreToRemove);
+                TextComponent.Builder component = Component.text();
+                component.append(Component.text("-", NamedTextColor.DARK_RED));
+                component.append(Component.text(scoreToRemove, NamedTextColor.DARK_RED));
+                component.append(Component.text(" points!", NamedTextColor.WHITE));
+                team.sendMessage(component.build());
 
+            }
+        }
 
     }
 
@@ -203,11 +227,13 @@ public class MineralListener implements Listener {
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
         switch (gameHandler.playerManager.getPlayer(player).ClassString()) {
-            case "robust" -> event.setDamage(event.getDamage() * 0.85);
+            case "robust" -> event.setDamage(event.getDamage() * 0.9);
             case "agile" -> {
                if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) event.setCancelled(true);
            }
         }
+
+        if (gameHandler.gamePhase == GameHandler.Phase.PREGAME && event.getCause() != EntityDamageEvent.DamageCause.KILL) event.setCancelled(true);
 
 
     }
@@ -217,18 +243,16 @@ public class MineralListener implements Listener {
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
-        player.sendMessage("hi");
         if (!map.containsKey(player.getWorld())) {
-            player.sendMessage("hello");
             AttributeInstance[] attributeInstances = new AttributeInstance[]{
                     player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED),
                     player.getAttribute(Attribute.GENERIC_MAX_HEALTH)
             };
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 
             for (AttributeInstance attributeInstance : attributeInstances) {
                 assert attributeInstance != null;
                 for (AttributeModifier modifier : attributeInstance.getModifiers()) {
-                    player.sendMessage(modifier.getName());
                     if (modifier.getName().contains("mineralcontest")) {
                         attributeInstance.removeModifier(modifier);
                     }
@@ -266,15 +290,15 @@ public class MineralListener implements Listener {
         Material materialToDrop;
         Material originalMaterial;
         switch (event.getBlockState().getType()) {
-            case GOLD_ORE -> {
+            case GOLD_ORE, DEEPSLATE_GOLD_ORE -> {
                 materialToDrop = Material.GOLD_INGOT;
                 originalMaterial = Material.RAW_GOLD;
             }
-            case IRON_ORE -> {
+            case IRON_ORE, DEEPSLATE_IRON_ORE -> {
                 materialToDrop = Material.IRON_INGOT;
                 originalMaterial = Material.RAW_IRON;
             }
-            case COPPER_ORE -> {
+            case COPPER_ORE, DEEPSLATE_COPPER_ORE -> {
                 materialToDrop = Material.COPPER_INGOT;
                 originalMaterial = Material.RAW_COPPER;
             }
@@ -348,6 +372,16 @@ public class MineralListener implements Listener {
     }
 
     @EventHandler
+    public void onEntityMove(EntityMoveEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!map.containsKey(entity.getWorld())) return;
+        GameHandler gameHandler = map.get(entity.getWorld());
+        if (isLocationNoGood(event.getTo(), gameHandler.groundHeight) && !isLocationNoGood(event.getFrom(), gameHandler.groundHeight)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         onPlayerChangedWorld(new PlayerChangedWorldEvent(player, player.getWorld()));
@@ -357,11 +391,46 @@ public class MineralListener implements Listener {
         player.setHealth(0);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onDropItem(PlayerDropItemEvent event){
         Player player = event.getPlayer();
         if (!map.containsKey(player.getWorld())) return;
         if (event.getItemDrop().getItemStack().getItemMeta().getPersistentDataContainer().has(NamespacedKey.fromString("selection_item", MineralContest.getInstance()))){
+            event.setCancelled(true);
+        }
+    }
+    @EventHandler
+    @SuppressWarnings("ConstantConditions")
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        event.getDrops().removeIf(
+                itemStack -> {
+                    Boolean bool = itemStack
+                            .getItemMeta().getPersistentDataContainer()
+                            .get(NamespacedKey.fromString("no_drop", MineralContest.getInstance()), PersistentDataType.BOOLEAN);
+                    return bool != null && bool;
+                });
+    }
+
+    @EventHandler
+    public void onPortalCreated(PortalCreateEvent event) {
+        if (!map.containsKey(event.getWorld())) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onWorldInit(WorldInitEvent event) {
+        event.getWorld().setKeepSpawnInMemory(false);
+    }
+
+    @EventHandler
+    public void onPlayerLoseFood(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        if (!map.containsKey(player.getWorld())) return;
+
+        int minFood = (int) MineralContest.instance.config.get("minimumFood", 10);
+        if (event.getFoodLevel() < minFood) {
             event.setCancelled(true);
         }
     }

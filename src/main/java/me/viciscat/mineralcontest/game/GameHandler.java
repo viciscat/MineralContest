@@ -12,6 +12,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -60,6 +62,10 @@ public class GameHandler implements Runnable{
     public Phase gamePhase = Phase.PREGAME;
 
     private final MineralTeam[] teams;
+
+    public MineralTeam[] getTeams() {
+        return teams;
+    }
 
     public Map<Material, Integer> scoreMap = new HashMap<>();
 
@@ -113,6 +119,7 @@ public class GameHandler implements Runnable{
 
         scoreMap.put(Material.COPPER_INGOT, 4);
         scoreMap.put(Material.IRON_INGOT, 10);
+        scoreMap.put(Material.AMETHYST_SHARD, 30);
         scoreMap.put(Material.GOLD_INGOT, 50);
         scoreMap.put(Material.DIAMOND, 150);
         scoreMap.put(Material.EMERALD, 300);
@@ -151,11 +158,16 @@ public class GameHandler implements Runnable{
                         speedAttr.addModifier(new AttributeModifier("mineralcontest_agile", 0.2, AttributeModifier.Operation.MULTIPLY_SCALAR_1));
                         speedAttr.setBaseValue(base);
                     }
-                    case "robust" -> healthAttr.addModifier(new AttributeModifier("mineralcontest_robust", 10, AttributeModifier.Operation.ADD_NUMBER));
+                    case "robust" -> healthAttr.addModifier(new AttributeModifier("mineralcontest_robust", 4, AttributeModifier.Operation.ADD_NUMBER));
 
                     case "miner" -> {
                         for (int i = 9; i < 18; i++) {
-                            player.getInventory().setItem(i, new ItemStack(Material.BARRIER));
+                            ItemStack barrier = new ItemStack(Material.BARRIER);
+                            ItemMeta barrierMeta = barrier.getItemMeta();
+                            barrierMeta.displayName(Component.text(""));
+                            barrierMeta.getPersistentDataContainer().set(NamespacedKey.fromString("no_drop", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
+                            barrier.setItemMeta(barrierMeta);
+                            player.getInventory().setItem(i, barrier);
                         }
                     }
                     case "warrior" -> healthAttr.addModifier(new AttributeModifier("mineralcontest_warrior", -4, AttributeModifier.Operation.ADD_NUMBER));
@@ -166,11 +178,13 @@ public class GameHandler implements Runnable{
                 player.setFoodLevel(20);
                 player.setSaturation(20);
                 player.setGameMode(GameMode.SURVIVAL);
-                player.getInventory().addItem(
-                        new ItemStack(Material.STONE_SWORD),
-                        new ItemStack(Material.BOW),
-                        new ItemStack(Material.ARROW, 32),
-                        new ItemStack(Material.COOKED_BEEF, 16));
+                ItemStack errorItem = new ItemStack(Material.PAPER);
+                errorItem.editMeta(itemMeta -> {
+                    itemMeta.displayName(Component.text("Error loading config :("));
+                    itemMeta.addEnchant(Enchantment.VANISHING_CURSE, 1, true);
+                });
+                List<ItemStack> stuff = (List<ItemStack>) plugin.config.get("startLoot", List.of(errorItem));
+                PlayerManager.equipItems(player, stuff);
             }
         }
         for (Player player : gameWorld.getPlayers()) {

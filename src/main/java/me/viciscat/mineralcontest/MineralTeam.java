@@ -1,6 +1,7 @@
 package me.viciscat.mineralcontest;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -118,6 +119,15 @@ public class MineralTeam implements Comparable<MineralTeam>{
             if (player != null) {
                 player.teleport(arenaLocation);
                 player.sendMessage(Component.text("Whoosh!"));
+            }
+        }
+    }
+
+    public void sendMessage(ComponentLike componentLike) {
+        for (UUID uuid : players) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                player.sendMessage(componentLike);
             }
         }
     }

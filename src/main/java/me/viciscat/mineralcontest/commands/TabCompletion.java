@@ -34,7 +34,7 @@ public class TabCompletion implements TabCompleter {
                 returnList.add("debug");
                 returnList.add("start");
                 returnList.add("reload");
-                return returnList;
+                returnList.add("delete_force");
             }
             returnList.add("join");
             return returnList;

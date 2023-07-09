@@ -14,8 +14,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.util.FileUtil;
+import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 public class MCCommandHandler implements CommandExecutor {
@@ -113,6 +117,7 @@ public class MCCommandHandler implements CommandExecutor {
                     player.setGameMode(GameMode.SPECTATOR);
                 }
                 player.teleport(tpLocation);
+                player.setBedSpawnLocation(tpLocation, true);
                 return true;
 
 
@@ -137,7 +142,10 @@ public class MCCommandHandler implements CommandExecutor {
                 FileConfiguration configuration = plugin.config;
                 if (args.length == 2) {
                     Object object =  configuration.get(args[1]);
-                    sender.sendPlainMessage(object == null ? "null": object.toString());
+                    for (String comment : configuration.getComments(args[1])) {
+                        sender.sendPlainMessage(comment);
+                    }
+                    sender.sendPlainMessage("value: " + (object == null ? "null": object.toString()));
                     return true;
                 }
                 Object object =  configuration.get(args[1]);
@@ -148,15 +156,58 @@ public class MCCommandHandler implements CommandExecutor {
                         sender.sendPlainMessage("THIS SHIT AIN'T AN INT");
                         return true;
                     }
-                    sender.sendPlainMessage("THINGY HAS BEEN SET! don't forget to do /mcontest reload");
-                    plugin.saveConfig();
-                    return true;
                 }
+                sender.sendPlainMessage("THINGY HAS BEEN SET!");
+                plugin.saveConfig();
+                return true;
+
+            }
+            case "delete_force" -> {
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
+                if (args.length == 1) {
+                    sender.sendPlainMessage("Format: /mineralcontest delete_force <world_name>");
+                    return false;
+                }
+                File worldFolder = Bukkit.getServer().getWorldContainer();
+                File[] worldFiles = worldFolder.listFiles(File::isDirectory);
+                assert worldFiles != null;
+
+                for (File file : worldFiles) {
+                    if (file.getName().equals(args[1])) {
+                        try {
+                            FileUtils.deleteDirectory(file);
+                            sender.sendPlainMessage("deleted!");
+                        } catch (IOException e) {
+                            sender.sendPlainMessage("An error occured :(");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return true;
+            }
+            case "unload" -> {
+                if (!sender.hasPermission("mineral-contest.admin")) {
+                    sender.sendPlainMessage("No permission :(");
+                    return false;
+                }
+                if (args.length == 1) {
+                    sender.sendPlainMessage("Format: /mineralcontest unload <world_name>");
+                    return false;
+                }
+                World world = Bukkit.getServer().getWorld(args[1]);
+                if (world == null) {
+                    sender.sendPlainMessage("world no exist");
+                    return false;
+                }
+                Bukkit.getServer().unloadWorld(world, false);
+                return true;
             }
             default -> {
                 return false;
             }
         }
-        return false;
     }
 }

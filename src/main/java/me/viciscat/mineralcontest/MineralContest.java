@@ -5,24 +5,36 @@ import me.viciscat.mineralcontest.commands.MCCommandHandler;
 import me.viciscat.mineralcontest.commands.TabCompletion;
 import me.viciscat.mineralcontest.commands.testing2Command;
 import me.viciscat.mineralcontest.game.GameHandler;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.*;
 
 public final class MineralContest extends JavaPlugin {
 
     public StructureManager structureManager;
     public Map<String, Structure> structureMap = new HashMap<>();
     public Map<World, GameHandler> gameHandlerMap = new HashMap<>();
+
+    public InputStream levelDat;
 
     public FileConfiguration config = getConfig();
 
@@ -39,6 +51,7 @@ public final class MineralContest extends JavaPlugin {
             structureMap.put("castle_blue", structureManager.loadStructure(getResource("structures/blue_castle.nbt")));
             structureMap.put("castle_yellow", structureManager.loadStructure(getResource("structures/yellow_castle.nbt")));
             structureMap.put("castle_green", structureManager.loadStructure(getResource("structures/green_castle.nbt")));
+            levelDat = getResource("level.dat");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -52,11 +65,44 @@ public final class MineralContest extends JavaPlugin {
         assert slashArena != null;
         slashArena.setExecutor(new ArenaCommand());
 
+        // CONFIG DEFAULTS
         config.addDefault("gameDuration", 3600);
+        config.setComments("gameDuration", List.of("How long the game will last, in seconds"));
         config.addDefault("firstChestDelay", 900);
+        config.setComments("firstChestDelay", List.of("Time before the first arena chest appears, still in seconds"));
         config.addDefault("chestPeriod", 1200);
+        config.setComments("chestPeriod", List.of("Time between the subsequent chests, in seconds again, obviously)"));
         config.options().copyDefaults(true);
+
+        // START LOOT
+        List<ItemStack> stuff = new ArrayList<>(List.of(
+                new ItemStack(Material.STONE_SWORD),
+                new ItemStack(Material.BOW),
+                new ItemStack(Material.COOKED_BEEF, 16),
+                new ItemStack(Material.IRON_HELMET),
+                new ItemStack(Material.IRON_CHESTPLATE),
+                new ItemStack(Material.IRON_LEGGINGS),
+                new ItemStack(Material.IRON_BOOTS)));
+
+        for (ItemStack itemStack : stuff) {
+            itemStack.editMeta(itemMeta -> {
+                //noinspection DataFlowIssue
+                itemMeta.getPersistentDataContainer().set(NamespacedKey.fromString("no_drop", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
+                itemMeta.lore(List.of(Component.text("Item does not drop on death", Style.style(NamedTextColor.DARK_GRAY, TextDecoration.ITALIC))));
+            });
+        }
+        stuff.add(new ItemStack(Material.ARROW, 32));
+
+        config.addDefault("startLoot", stuff);
+        config.setComments("startLoot", List.of(
+                "The stuff that the players will have when the game starts and when they respawn. Anything that is armor will be auto-equipped",
+                "Please don't edit it here, use '/mcontest config startLoot set' to set your current inventory as the new load-out."));
+        config.addDefault("minimumFood", 10);
+        config.setComments("minimumFood", List.of(
+                "The players' food level will never go underneath this value"
+                ));
         saveConfig();
+        actuallyReloadConfig();
 
     }
 

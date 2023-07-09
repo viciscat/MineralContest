@@ -56,8 +56,8 @@ public class ClassSelectUI {
         chestplateMeta.displayName(Component.text("Robust").decoration(TextDecoration.ITALIC, false));
         chestplate.setItemMeta(chestplateMeta);
         chestplate.lore(Arrays.asList(
-                Component.text("- 15 Hearts"),
-                Component.text("- Take 15% less damage")
+                Component.text("- 12 Hearts"),
+                Component.text("- Take 10% less damage")
         ));
 
         // Warrior

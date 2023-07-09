@@ -1,5 +1,6 @@
 package me.viciscat.mineralcontest.commands.sub;
 
+import com.google.common.io.Files;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
 import net.kyori.adventure.text.Component;
@@ -13,7 +14,11 @@ import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
+import org.codehaus.plexus.util.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -85,6 +90,22 @@ public class GameCreator {
             highest = 0;
             heights1.clear();
 
+            try {
+                String path = Bukkit.getServer().getWorldContainer().getCanonicalPath() + "/" + worldName;
+                logger.info(path);
+                logger.info("Create dirs: " + new File(path).mkdirs());
+
+                path += "/level.dat";
+                File targetFile = new File(path);
+
+                InputStream inputStream = plugin.levelDat;
+                byte[] buffer = new byte[inputStream.available()];
+                logger.info("read: " + inputStream.read(buffer));
+                Files.write(buffer, targetFile);
+            } catch (IOException e) {
+                logger.warning(e.toString());
+                return false;
+            }
 
             world1 = creator.seed(random.nextLong()).createWorld();
             logger.info("Try number: " + tries);
@@ -131,15 +152,18 @@ public class GameCreator {
             return false;
         }
         noiseGenerator = new SimplexNoiseGenerator(world);
+        sender.sendPlainMessage("Found a world!");
+        Bukkit.getScheduler().runTask(plugin, () -> stage2(playerSender));
 
+        return true;
+    }
 
-
+    private void stage2(Player playerSender) {
         Collections.sort(heights);
         // While the terrain varies too much, remove highest or lowest point depending on how it affects the variance
         // Doing so to find the best place to place the platform thing
         while (getVariance(heights, -1) > 20 && heights.size() > 0) {
-            double prev_variance = getVariance(heights, -1);
-            sender.getServer().broadcast(Component.text(prev_variance));
+            // double prev_variance = getVariance(heights, -1);
             if (getVariance(heights.subList(0, heights.size() - 2), -1) < getVariance(heights.subList(1, heights.size() - 1), -1)) {
                 heights.remove(heights.size() - 1);
             }   else { heights.remove(0); }
@@ -169,6 +193,11 @@ public class GameCreator {
             float percentage = ((float) i + 80)/160;
             logger.info(percentage + " progress");
         }
+        playerSender.sendPlainMessage("Doing final things");
+        Bukkit.getScheduler().runTask(plugin, () -> stage3(playerSender, final_height));
+    }
+
+    private void stage3(Player playerSender, int final_height) {
         // Now it's getting spicy
         smooth_side(final_height, false, false);
         smooth_side(final_height, false, true);
@@ -186,19 +215,19 @@ public class GameCreator {
         world.getWorldBorder().setSize(80);
         world.setSpawnLocation(0, final_height, 0);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-        for (Player player : ((Player) sender).getWorld().getPlayers()) {
+        world.setKeepSpawnInMemory(true);
+        for (Player player : playerSender.getWorld().getPlayers()) {
             player.sendMessage(playerSender.displayName().color(NamedTextColor.DARK_AQUA).append(
                     Component.text(" created a mineral contest! Join here: ")
             ).append(
-                    Component.text("/mineralcontest join " + worldName).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + worldName)).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
+                    Component.text("/mineralcontest join " + world.getName()).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + world.getName())).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
             ));
         }
         int gameDuration = plugin.config.getInt("gameDuration", 3600);
         int firstChestDelay = plugin.config.getInt("firstChestDelay", 900);
         int chestPeriod = plugin.config.getInt("chestPeriod", 1200);
         plugin.gameHandlerMap.put(world, new GameHandler(world, gameDuration, firstChestDelay, chestPeriod, final_height));
-        sender.sendPlainMessage("Game created with settings: " + gameDuration + " " + firstChestDelay + " " + chestPeriod);
-        return true;
+        playerSender.sendPlainMessage("Game created with settings: " + gameDuration + " " + firstChestDelay + " " + chestPeriod);
     }
 
 
