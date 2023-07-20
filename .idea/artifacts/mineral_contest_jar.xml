@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="mineral-contest:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/mineral_contest_jar</output-path>
-    <root id="archive" name="mineral-contest.jar">
-      <element id="module-output" name="mineral-contest" />
-    </root>
-  </artifact>
-</component>
