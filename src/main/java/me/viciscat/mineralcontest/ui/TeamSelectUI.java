@@ -3,9 +3,13 @@ package me.viciscat.mineralcontest.ui;
 import me.viciscat.mineralcontest.MineralTeam;
 import me.viciscat.mineralcontest.game.GameHandler;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -24,10 +28,10 @@ import java.util.UUID;
 public class TeamSelectUI {
     private final static Material[] wools = new Material[] {Material.RED_WOOL, Material.BLUE_WOOL, Material.YELLOW_WOOL, Material.LIME_WOOL};
     public final static NamedTextColor[] textColors = new NamedTextColor[] {NamedTextColor.RED, NamedTextColor.BLUE, NamedTextColor.YELLOW, NamedTextColor.GREEN};
-    public final static String[] teamColors = new String[] {"RED", "BLUE", "YELLOW", "GREEN"};
+    public final static String[] teamColors = new String[] {"red", "blue", "yellow", "green"};
 
     public static void openUI(Player player, GameHandler gameHandler) {
-        openUI(player, gameHandler, Bukkit.createInventory(new TeamSelectUI.Holder(), 27, Component.text("Select your team!")));
+        openUI(player, gameHandler, Bukkit.createInventory(new TeamSelectUI.Holder(), 27, Component.translatable("mineral-contest.ui.team_select.title")));
     }
 
     public static void openUI(Player player, GameHandler gameHandler, Inventory inventory) {
@@ -41,22 +45,39 @@ public class TeamSelectUI {
             inventory.setItem(26 - i, new ItemStack(glass));
         }
         for (int i = 0; i < wools.length; i++) {
+
+            // Get the translated team color
+            TextComponent colorComponent = (TextComponent) GlobalTranslator.render(
+                    Component.translatable("mineral-contest.teams." + teamColors[i], Style.style(textColors[i], TextDecoration.BOLD)),
+                    player.locale());
+            colorComponent = colorComponent.content(colorComponent.content().toUpperCase());
+
+            // Put the item
             ItemStack itemStack = new ItemStack(wools[i]);
             ItemMeta woolMeta = itemStack.getItemMeta();
-            woolMeta.displayName(Component.text(teamColors[i]).append(Component.text(" TEAM")).decoration(TextDecoration.ITALIC, false));
+            woolMeta.displayName(colorComponent.decoration(TextDecoration.ITALIC, false).decoration(TextDecoration.BOLD, false));
             MineralTeam team = gameHandler.getTeam(i);
             assert team != null;
-            if (team.playerInTeam(gameHandler.playerManager.getPlayer(player))) {
+            if (team.playerInTeam(gameHandler.playerManager.getPlayer(player))) { // Glint if same team
                 woolMeta.addEnchant(Enchantment.DURABILITY, 1, false);
                 woolMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             itemStack.setItemMeta(woolMeta);
 
+
+            // Get the translated join string
+            Component joinText = GlobalTranslator.render(
+                    Component.translatable("mineral-contest.ui.team_select.join", Style.style(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
+                    player.locale());
+
+            // Replace the thingies
+            joinText = joinText.replaceText(TextReplacementConfig.builder().matchLiteral("%%color%%").replacement(colorComponent).build());
+
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Click to join the ", Style.style(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
-                    .append(Component.text(teamColors[i], Style.style(textColors[i], TextDecoration.BOLD)))
-                    .append(Component.text(" team!", Style.style(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))));
-            lore.add(Component.text("Players in this team:").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+            lore.add(joinText);
+            lore.add(GlobalTranslator.render(
+                    Component.translatable("mineral-contest.ui.team_select.players").color(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                    player.locale()));
             for (UUID uuid : team.getPlayerUUID()) {
                 Player teamPlayer = Bukkit.getPlayer(uuid);
                 if (teamPlayer != null) {

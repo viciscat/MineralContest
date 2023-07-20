@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 public class MCCommandHandler implements CommandExecutor {
@@ -50,12 +52,16 @@ public class MCCommandHandler implements CommandExecutor {
                     sender.sendPlainMessage("No permission :(");
                     return false;
                 }
+                String name;
                 if (args.length == 1) {
-                    sender.sendPlainMessage("Format: /mineralcontest create <World Name>");
-                    return false;
+                    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+                    name = sdf1.format(new Date().getTime());
+                    sender.sendPlainMessage("Using current time as name: " + name);
+                } else {
+                    name = args[1];
                 }
                 GameCreator gameCreator = new GameCreator();
-                return gameCreator.createGame(args[1], sender);
+                return gameCreator.createGame(name, sender);
             }
             case "debug" -> {
                 if (!plugin.gameHandlerMap.containsKey(player.getWorld())) return false;
@@ -106,7 +112,9 @@ public class MCCommandHandler implements CommandExecutor {
                     sender.sendPlainMessage("Format: /mineralcontest join <Game Name>");
                     return false;
                 }
-                World requestedWorld = Bukkit.getWorld(args[1]);
+                String name = args[1];
+                String prefix = plugin.config.getString("worldNamePrefix", "mineral-contest_");
+                World requestedWorld = Bukkit.getWorld(prefix + name);
                 if (requestedWorld == null || !MineralContest.getInstance().gameHandlerMap.containsKey(requestedWorld)) {
                     sender.sendPlainMessage("This game doesn't exist!!");
                     return false;

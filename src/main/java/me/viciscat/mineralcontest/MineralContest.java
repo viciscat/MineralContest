@@ -5,10 +5,14 @@ import me.viciscat.mineralcontest.commands.MCCommandHandler;
 import me.viciscat.mineralcontest.commands.TabCompletion;
 import me.viciscat.mineralcontest.commands.testing2Command;
 import me.viciscat.mineralcontest.game.GameHandler;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -67,11 +71,11 @@ public final class MineralContest extends JavaPlugin {
 
         // CONFIG DEFAULTS
         config.addDefault("gameDuration", 3600);
-        config.setComments("gameDuration", List.of("How long the game will last, in seconds"));
+        config.setComments("gameDuration", List.of("How long the game will last, in seconds. Default: 3600"));
         config.addDefault("firstChestDelay", 900);
-        config.setComments("firstChestDelay", List.of("Time before the first arena chest appears, still in seconds"));
+        config.setComments("firstChestDelay", List.of("Time before the first arena chest appears, still in seconds. Default: 900"));
         config.addDefault("chestPeriod", 1200);
-        config.setComments("chestPeriod", List.of("Time between the subsequent chests, in seconds again, obviously)"));
+        config.setComments("chestPeriod", List.of("Time between the subsequent chests, in seconds again, obviously. Default: 1200"));
         config.options().copyDefaults(true);
 
         // START LOOT
@@ -99,10 +103,23 @@ public final class MineralContest extends JavaPlugin {
                 "Please don't edit it here, use '/mcontest config startLoot set' to set your current inventory as the new load-out."));
         config.addDefault("minimumFood", 10);
         config.setComments("minimumFood", List.of(
-                "The players' food level will never go underneath this value"
+                "The players' food level will never go underneath this value. Default: 10 (5 little meat things)"
                 ));
+        config.addDefault("worldNamePrefix", "mineral-contest_");
+        config.setComments("worldNamePrefix", List.of(
+                "All mini game worlds name will start with that string"
+        ));
         saveConfig();
         actuallyReloadConfig();
+
+        //noinspection DataFlowIssue
+        TranslationRegistry translationRegistry = TranslationRegistry.create(NamespacedKey.fromString("localization",this));
+        ResourceBundle resourceBundleEN = ResourceBundle.getBundle("translations.main", Locale.ENGLISH, UTF8ResourceBundleControl.get());
+        ResourceBundle resourceBundleFR = ResourceBundle.getBundle("translations.main", Locale.FRENCH, UTF8ResourceBundleControl.get());
+        translationRegistry.registerAll(Locale.ENGLISH, resourceBundleEN, false);
+        translationRegistry.registerAll(Locale.FRENCH, resourceBundleFR, false);
+        GlobalTranslator.translator().addSource(translationRegistry);
+
 
     }
 

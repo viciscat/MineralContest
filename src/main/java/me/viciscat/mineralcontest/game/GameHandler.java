@@ -4,9 +4,12 @@ import me.viciscat.mineralcontest.*;
 import me.viciscat.mineralcontest.ui.ClassSelectUI;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -139,6 +142,7 @@ public class GameHandler implements Runnable{
         for (MineralPlayer mineralPlayer : playerManager.getPlayers()) {
             Player player = mineralPlayer.Player();
             player.getInventory().clear();
+            player.setExp(0);
             MineralTeam mineralTeam = mineralPlayer.MineralTeam();
             if (mineralTeam != null) {
                 Team team = mineralTeam.getTeam();
@@ -211,8 +215,10 @@ public class GameHandler implements Runnable{
                 player.setBedSpawnLocation(mineralTeam.getSpawnLocation(), true);
                 ItemStack sword = new ItemStack(Material.IRON_SWORD);
                 ItemMeta swordMeta = sword.getItemMeta();
+                TranslatableComponent translatable = Component.translatable("mineral-contest.class_selector_item_name").decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false);
+
                 swordMeta.getPersistentDataContainer().set(NamespacedKey.fromString("selection_item", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
-                swordMeta.displayName(Component.text("Right click to select your class!").decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false));
+                swordMeta.displayName(GlobalTranslator.render(translatable, player.locale()).decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false));
                 sword.setItemMeta(swordMeta);
                 player.getInventory().setItem(8, sword);
                 ClassSelectUI.openUI(player, this);
@@ -286,17 +292,22 @@ public class GameHandler implements Runnable{
             teamString = team.getTeamNameScoreboard();
         }
         Player player = mineralPlayer.Player();
-        // If game is running
+
+        String wordTeam = StringUtils.capitalize(PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(Component.translatable("mineral-contest.teams.team"), player.locale())));
+
         switch (gamePhase) {
             case PREGAME -> {
+                String selectTeam = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(Component.translatable("mineral-contest.ui.team_select.title"), player.locale()));
+
+
                 objective.getScore(" ").setScore(9);
                 objective.getScore("§7> §f" + PlainTextComponentSerializer.plainText().serialize(player.displayName())).setScore(8);
                 objective.getScore("  ").setScore(7);
                 objective.getScore("   ").setScore(6);
-                objective.getScore("§7> §fSelect your team!").setScore(5);
-                objective.getScore("§o/mineralcontest start").setScore(4);
-                objective.getScore("§oto start!").setScore(3);
-                objective.getScore("§7> §fTeam: " + "None").setScore(2);
+                objective.getScore("§7> §f" + selectTeam).setScore(5);
+                objective.getScore("§o§8 /mcontest start").setScore(4);
+                objective.getScore("§o§8 to start!").setScore(3);
+                objective.getScore("§7> §f" + wordTeam + ": " + "None").setScore(2);
                 objective.getScore("     ").setScore(1);
                 objective.getScore("      ").setScore(0);
             }
@@ -309,7 +320,7 @@ public class GameHandler implements Runnable{
                 objective.getScore("§7> §fSelect your class!").setScore(5);
                 objective.getScore("Time").setScore(4);
                 objective.getScore("   ").setScore(3);
-                objective.getScore("§7> §fTeam: " + teamString).setScore(2);
+                objective.getScore("§7> §f" + wordTeam + ": " + teamString).setScore(2);
                 objective.getScore("    ").setScore(1);
                 objective.getScore("     ").setScore(0);
             }
@@ -323,7 +334,7 @@ public class GameHandler implements Runnable{
                 objective.getScore("§7> §fGame").setScore(5);
                 objective.getScore("Time").setScore(4);
                 objective.getScore("   ").setScore(3);
-                objective.getScore("§7> §fTeam: " + teamString).setScore(2);
+                objective.getScore("§7> §f" + wordTeam + ": " + teamString).setScore(2);
                 if (team == null) {
                     objective.getScore("§7Booster: §fNone").setScore(1);
                 }else {

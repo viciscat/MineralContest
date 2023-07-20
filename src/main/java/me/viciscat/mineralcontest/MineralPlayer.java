@@ -1,8 +1,10 @@
 package me.viciscat.mineralcontest;
 
+import com.destroystokyo.paper.ClientOption;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Criteria;
@@ -11,6 +13,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.UUID;
 
 public class MineralPlayer {
@@ -39,6 +42,7 @@ public class MineralPlayer {
         Objective newObjective = newScoreboard.registerNewObjective("mineral_contest_gui", Criteria.DUMMY, Component.text("Mineral Contest").decoration(TextDecoration.BOLD, true).color(NamedTextColor.DARK_AQUA));
         newObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         playerScoreboard = newScoreboard;
+        locale = Bukkit.getPlayer(playerUUID).locale();
     }
 
 
@@ -62,5 +66,16 @@ public class MineralPlayer {
     }
     public void PlayerScoreboard(Scoreboard playerScoreboard) {
         this.playerScoreboard = playerScoreboard;
+    }
+
+
+    private Locale locale;
+
+    public Locale Locale() {
+        return locale;
+    }
+
+    public void Locale(Locale locale) {
+        this.locale = locale;
     }
 }

@@ -1,8 +1,10 @@
 package me.viciscat.mineralcontest.commands.sub;
 
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
+import me.viciscat.mineralcontest.game.MineralChunkGen;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,6 +35,8 @@ public class GameCreator {
     private final int SMOOTH_DISTANCE = 6;
     private final float EXTRA_SMOOTH_DISTANCE = 3;
     private SimplexNoiseGenerator noiseGenerator;
+
+    private String worldName;
 
     /**
      * Calculates the average, nothing crazy
@@ -74,9 +78,10 @@ public class GameCreator {
         return world.getHighestBlockYAt(x, z);
     }
 
-    private boolean findWorld(String worldName) {
+    private boolean findWorld() {
+        String prefix = plugin.config.getString("worldNamePrefix", "mineral-contest_");
         Random random = new Random();
-        WorldCreator creator = new WorldCreator(worldName);
+        WorldCreator creator = new WorldCreator(prefix + worldName);
         creator.generateStructures(false);
         World world1 = null;
         List<Integer> heights1 = new ArrayList<>();
@@ -90,24 +95,8 @@ public class GameCreator {
             highest = 0;
             heights1.clear();
 
-            try {
-                String path = Bukkit.getServer().getWorldContainer().getCanonicalPath() + "/" + worldName;
-                logger.info(path);
-                logger.info("Create dirs: " + new File(path).mkdirs());
 
-                path += "/level.dat";
-                File targetFile = new File(path);
-
-                InputStream inputStream = plugin.levelDat;
-                byte[] buffer = new byte[inputStream.available()];
-                logger.info("read: " + inputStream.read(buffer));
-                Files.write(buffer, targetFile);
-            } catch (IOException e) {
-                logger.warning(e.toString());
-                return false;
-            }
-
-            world1 = creator.seed(random.nextLong()).createWorld();
+            world1 = creator.seed(random.nextLong()).generator(new MineralChunkGen()).createWorld();
             logger.info("Try number: " + tries);
             assert world1 != null;
             loop: for (int i = -80; i < 80; i+=10) {
@@ -145,7 +134,8 @@ public class GameCreator {
         if (!(sender instanceof Player playerSender)) return false;
         // Create and generate the world
 
-        boolean result = findWorld(worldName);
+        this.worldName = worldName;
+        boolean result = findWorld();
 
         if (!result) {
             sender.sendPlainMessage("Couldn't find good enough spawn location... Please try again!");
@@ -215,12 +205,13 @@ public class GameCreator {
         world.getWorldBorder().setSize(80);
         world.setSpawnLocation(0, final_height, 0);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setKeepSpawnInMemory(true);
         for (Player player : playerSender.getWorld().getPlayers()) {
             player.sendMessage(playerSender.displayName().color(NamedTextColor.DARK_AQUA).append(
                     Component.text(" created a mineral contest! Join here: ")
             ).append(
-                    Component.text("/mineralcontest join " + world.getName()).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + world.getName())).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
+                    Component.text("/mineralcontest join " + worldName).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + worldName)).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
             ));
         }
         int gameDuration = plugin.config.getInt("gameDuration", 3600);
