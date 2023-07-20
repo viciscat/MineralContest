@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+:root {
+    --background_color_tableau: white;
+    --bordures_interieurs: #dddddd;
+}
+
+/* Réinitialisation des styles par défaut */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+  
+/* Header */
+#header-nav {
+    position: relative;
+    background-image: linear-gradient(62deg, #00540f 0%, #678100 100%);
+    box-shadow: 0px 0px 20px 10px rgba(0,0,0,0.4);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+}
+
+
+/* Container du logo à gauche */
+#header-nav > #image-container {
+    margin: 10px 30px;
+}
+
+    /* Logo à gauche*/
+#header-nav #image-container> #menu-icon {
+    height: 70px;
+    width: 70px;
+}
+
+/* Container de tous les liens */
+#header-nav #menu-items {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+            
+    /* Container d'un lien */
+#header-nav #menu-items > li {
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+}
+    
+        /* Boite lien */
+#header-nav #menu-items > li > .link {
+    box-sizing: border-box;
+    }
+  
+            /* Lien */
+#header-nav #menu-items > li > .link a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5em;
+    padding: 20px;
+    transition: all 0.1s ease-in;
+}
+            /* Lien hover */
+#header-nav .link a:hover {
+    color: #292929 !important;
+}
+
+
+
+
+
+#bg-container {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }  
+
+  #bg-container #gradient-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 80%, rgba(0, 0, 0, 1) 100%);
+  }
+
+  
+  
+  #bg-container img {
+    width: 100%;
+    height: 80vh;
+    object-fit: cover;
+  }
+
+  #noir {
+    margin-top: -10px;
+    height: 100px;
+    width: 100%;
+    background-color: black;
+  }
+  
+  
+
+#text-overlay {
+    position: absolute;
+    width: 100%;
+    top: 35%;
+    text-align: center;
+    color: white;
+    
+}
+
+#text-overlay h1 {
+    font-size: 60px;
+    text-shadow: -4px 4px 0 rgb(255, 0, 43);
+
+}
+
+#text-overlay p {
+    margin-top: 40px;
+    font-size: 25px;
+    
+    text-shadow: -2px 2px 3px rgb(0, 0, 0);
+
+}
+
+#main_text {
+    margin-top: 40px;
+    padding: 0px 8%;
+    text-align: center;
+}
+
+#main_text h1 {
+    margin-bottom: 30px;
+}
