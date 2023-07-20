@@ -13,11 +13,14 @@
     box-sizing: border-box;
     font-family: 'Poppins';
 }
+
+a {cursor: pointer;}
+
   
 /* Header */
 #header-nav {
     position: relative;
-    background-image: linear-gradient(62deg, #00540f 0%, #678100 100%);
+    background-image: linear-gradient(62deg, #4a6f28 0%, #5b8731 100%);
     box-shadow: 0px 0px 20px 10px rgba(0,0,0,0.4);
     z-index: 20;
     display: flex;
@@ -67,8 +70,12 @@
 }
             /* Lien hover */
 #header-nav .link a:hover {
-    color: #292929 !important;
+    text-decoration: underline !important;
 }
+
+
+
+            
 
 
 
@@ -124,17 +131,46 @@
 #text-overlay p {
     margin-top: 40px;
     font-size: 25px;
-    
     text-shadow: -2px 2px 3px rgb(0, 0, 0);
 
 }
 
 #main_text {
-    margin-top: 40px;
-    padding: 0px 8%;
+    padding: 200px 8%;
     text-align: center;
+    background-color: #2e2e2e;
+    color: rgb(236, 236, 236);
 }
 
 #main_text h1 {
-    margin-bottom: 30px;
+    padding-bottom: 40px;
 }
+
+#main_text p {
+    font-size: 1.2em;
+}
+
+
+
+#noir2 {
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+    position: absolute;
+    width: 100%;
+    height: 100px;
+}
+
+            /* Sous lignage des liens */
+#header-nav .submenu li a::after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    left: 2px;
+    width: 0;
+    height: 0.1px;
+    background-color: #ffffff;
+    transition: width 0.4s ease-in-out;
+}
+            /* Sous lignage des liens hover */
+#header-nav .submenu li a:hover::after {
+    width: 100%;
+  }
