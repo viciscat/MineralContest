@@ -135,18 +135,18 @@ a {cursor: pointer;}
 
 }
 
-#main_text {
+#rules {
     padding: 200px 8%;
     text-align: center;
     background-color: #2e2e2e;
     color: rgb(236, 236, 236);
 }
 
-#main_text h1 {
+#rules h1 {
     padding-bottom: 40px;
 }
 
-#main_text p {
+#rules p {
     font-size: 1.2em;
 }
 
