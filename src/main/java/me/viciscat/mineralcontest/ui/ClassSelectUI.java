@@ -18,9 +18,8 @@ import java.util.Arrays;
 
 public class ClassSelectUI {
 
-    static int[] test;
     public static void openUI(Player player, GameHandler gameHandler) {
-        Inventory inventory = Bukkit.createInventory(new ClassSelectUI.Holder(), 27, Component.text("Select your class!"));
+        Inventory inventory = Bukkit.createInventory(new ClassSelectUI.Holder(), 27, Component.translatable("mineral-contest.ui.class_select.title"));
         for (int i = 0; i < 10; i++) {
             ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
             ItemMeta glassMeta = glass.getItemMeta();

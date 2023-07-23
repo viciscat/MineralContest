@@ -2,6 +2,7 @@ package me.viciscat.mineralcontest;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.TranslatableComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -17,13 +18,7 @@ public class MineralTeam implements Comparable<MineralTeam>{
 
     private final List<UUID> players = new ArrayList<>();
 
-    public String getTeamNameScoreboard() {
-        return teamNameScoreboard;
-    }
-
-    private final String teamNameScoreboard;
-
-    public Component getTeamName() {
+    public TranslatableComponent getTeamName() {
         return teamName;
     }
 
@@ -48,7 +43,7 @@ public class MineralTeam implements Comparable<MineralTeam>{
         return team;
     }
 
-    private final Component teamName;
+    private final TranslatableComponent teamName;
 
     public int getScore() {
         return score;
@@ -76,9 +71,8 @@ public class MineralTeam implements Comparable<MineralTeam>{
     private Location arenaLocation;
 
 
-    public MineralTeam(Component name, String nameForScoreboard, BoundingBox territory, Location spawn, Location enderChest, Location arenaSpawn, Team team) {
-        teamName = name;
-        teamNameScoreboard = nameForScoreboard;
+    public MineralTeam(TranslatableComponent translatableName, BoundingBox territory, Location spawn, Location enderChest, Location arenaSpawn, Team team) {
+        teamName = translatableName;
         boundingBox = territory;
         spawnLocation = spawn;
         enderChestLocation = enderChest;

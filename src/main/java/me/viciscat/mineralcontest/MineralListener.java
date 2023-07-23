@@ -289,10 +289,8 @@ public class MineralListener implements Listener {
             ItemMeta compassMeta = compass.getItemMeta();
             compassMeta.getPersistentDataContainer().set(NamespacedKey.fromString("selection_item", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
             TranslatableComponent translatable = Component.translatable("mineral-contest.team_selector_item_name").decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false);
-            player.sendMessage(localeString);
             compassMeta.displayName(GlobalTranslator.render(translatable, player.locale()));
 
-            player.sendMessage(translatable); // translates all good
             compass.setItemMeta(compassMeta); // no translate :(
 
             playerInventory.setItem(8, compass);

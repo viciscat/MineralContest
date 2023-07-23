@@ -3,6 +3,7 @@ package me.viciscat.mineralcontest.game;
 import me.viciscat.mineralcontest.MineralPlayer;
 import me.viciscat.mineralcontest.MineralTeam;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,7 @@ public class PreGamePhase {
     static void updatePlayerScoreboards(GameHandler game) {
         for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
             MineralTeam mineralTeam = mineralPlayer.MineralTeam();
-            String teamString = mineralTeam == null ? "None" : mineralTeam.getTeamNameScoreboard();
+            String teamString = mineralTeam == null ? "None" : LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(mineralTeam.getTeamName(), mineralPlayer.Player().locale())).toUpperCase();
 
             Scoreboard scoreboard = mineralPlayer.PlayerScoreboard();
             Objective objective = scoreboard.getObjective("mineral_contest_gui");

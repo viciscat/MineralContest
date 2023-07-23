@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.apache.commons.lang3.StringUtils;
@@ -90,29 +91,25 @@ public class GameHandler implements Runnable{
         groundHeight = finalHeight;
 
         teams = new MineralTeam[]{
-                new MineralTeam(Component.text("RED", NamedTextColor.RED),
-                        "§cRED",
+                new MineralTeam(Component.translatable("mineral-contest.teams.red", NamedTextColor.RED),
                         BoundingBox.of(new Location(gameWorld, -49, groundHeight, 9), new Location(gameWorld, -67, groundHeight + 20, -9)),
                         new Location(gameWorld, -55, groundHeight+3, 0),
                         new Location(gameWorld, -59, groundHeight+3, 0),
                         new Location(gameWorld, -19d, groundHeight-8, 0.5),
                         gameScoreboard.registerNewTeam("red")),
-                new MineralTeam(Component.text("BLUE", NamedTextColor.BLUE),
-                        "§9BLUE",
+                new MineralTeam(Component.translatable("mineral-contest.teams.blue", NamedTextColor.BLUE),
                         BoundingBox.of(new Location(gameWorld, 49, groundHeight, -9), new Location(gameWorld, 67, groundHeight + 20, 9)),
                         new Location(gameWorld, 55, groundHeight+3, 0),
                         new Location(gameWorld, 59, groundHeight+3, 0),
                         new Location(gameWorld, 20d, groundHeight-8, 0.5),
                         gameScoreboard.registerNewTeam("blue")),
-                new MineralTeam(Component.text("YELLOW", NamedTextColor.YELLOW),
-                        "§eYELLOW",
+                new MineralTeam(Component.translatable("mineral-contest.teams.yellow", NamedTextColor.YELLOW),
                         BoundingBox.of(new Location(gameWorld, -9, groundHeight, -49), new Location(gameWorld, 9, groundHeight + 20, -67)),
                         new Location(gameWorld, 0, groundHeight+3, -55),
                         new Location(gameWorld, 0, groundHeight+3, -59),
                         new Location(gameWorld, 0.5d, groundHeight-8, -19d),
                         gameScoreboard.registerNewTeam("yellow")),
-                new MineralTeam(Component.text("GREEN", NamedTextColor.GREEN),
-                        "§aGREEN",
+                new MineralTeam(Component.translatable("mineral-contest.teams.green", NamedTextColor.GREEN),
                         BoundingBox.of(new Location(gameWorld, 9, groundHeight, 49), new Location(gameWorld, -9, groundHeight + 20, 67)),
                         new Location(gameWorld, 0, groundHeight+3, 55),
                         new Location(gameWorld, 0, groundHeight+3, 59),
@@ -140,6 +137,9 @@ public class GameHandler implements Runnable{
         gamePhase = Phase.GAME;
         gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
         for (MineralPlayer mineralPlayer : playerManager.getPlayers()) {
+            if (mineralPlayer.ClassString() == "none") {
+                mineralPlayer.ClassString(ClassSelectingPhase.classes[new Random().nextInt(ClassSelectingPhase.classes.length)]);
+            }
             Player player = mineralPlayer.Player();
             player.getInventory().clear();
             player.setExp(0);
@@ -279,7 +279,7 @@ public class GameHandler implements Runnable{
         if (objective == null) return;
 
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-
+        Player player = mineralPlayer.Player();
         // Clear it
         for (String entry : scoreboard.getEntries()) {
             scoreboard.resetScores(entry);
@@ -289,12 +289,12 @@ public class GameHandler implements Runnable{
         if (team == null) {
             teamString = "None";
         } else {
-            teamString = team.getTeamNameScoreboard();
+            teamString = LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(team.getTeamName(), player.locale())).toUpperCase();
         }
-        Player player = mineralPlayer.Player();
 
-        String wordTeam = StringUtils.capitalize(PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(Component.translatable("mineral-contest.teams.team"), player.locale())));
 
+        String wordTeam = StringUtils.capitalize(PlainTextComponentSerializer.plainText().serialize(
+                GlobalTranslator.render(Component.translatable("mineral-contest.teams.team"), player.locale())));
         switch (gamePhase) {
             case PREGAME -> {
                 String selectTeam = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(Component.translatable("mineral-contest.ui.team_select.title"), player.locale()));
@@ -313,11 +313,14 @@ public class GameHandler implements Runnable{
             }
 
             case CLASS_SELECTING -> {
+                String selectClass = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.title"), player.locale()));
+
+
                 objective.getScore(" ").setScore(9);
                 objective.getScore("§7> §f" + PlainTextComponentSerializer.plainText().serialize(player.displayName())).setScore(8);
                 objective.getScore("§7Class: §bNone" + mineralPlayer.ClassString()).setScore(7);
                 objective.getScore("  ").setScore(6);
-                objective.getScore("§7> §fSelect your class!").setScore(5);
+                objective.getScore("§7> §f" + selectClass).setScore(5);
                 objective.getScore("Time").setScore(4);
                 objective.getScore("   ").setScore(3);
                 objective.getScore("§7> §f" + wordTeam + ": " + teamString).setScore(2);
