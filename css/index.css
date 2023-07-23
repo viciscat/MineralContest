@@ -137,7 +137,6 @@ a {cursor: pointer;}
 
 #rules {
     padding: 200px 8%;
-    text-align: center;
     background-color: #2e2e2e;
     color: rgb(236, 236, 236);
 }
@@ -149,6 +148,32 @@ a {cursor: pointer;}
 #rules p {
     font-size: 1.2em;
 }
+
+.box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 2;
+}
+
+.box ul {
+    margin-left: 50px;
+}
+
+.box img {
+    width: 40%;
+    object-fit: contain;
+}
+
+.box2n img {
+    padding-left: 50px;
+}
+
+.box2n1 img {
+    padding-right: 50px;
+}
+
+
 
 
 
