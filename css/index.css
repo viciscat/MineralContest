@@ -201,6 +201,7 @@ a {cursor: pointer;}
 }
 
 #download p {
+    font-size: 1.2em;
     margin: 2% 0;
 }
 
@@ -239,6 +240,7 @@ a {cursor: pointer;}
 
 #about p {
     padding-top: 2%;
+    font-size: 1.2em;
 }
 
 #about a {
