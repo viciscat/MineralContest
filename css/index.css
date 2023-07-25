@@ -85,6 +85,7 @@ a {cursor: pointer;}
 
 
 #bg-container {
+    padding-top: 90px;
     width: 100%;
     position: relative;
     overflow: hidden;
@@ -139,7 +140,7 @@ a {cursor: pointer;}
 }
 
 #rules {
-    padding: 200px 8% 100px 8%;
+    padding: 200px 8% 0 8%;
     background-color: var(--bg_color);
     color: var(--text_color);
 }
@@ -194,7 +195,7 @@ a {cursor: pointer;}
 
 
 #download {
-    padding: 0 8% 0 8%;
+    padding: 150px 8% 0 8%;
     background-color: var(--bg_color);
     color: var(--text_color);
     
