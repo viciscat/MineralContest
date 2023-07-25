@@ -1,5 +1,6 @@
 # MineralContest
 A recreation of the minigame first seen on Squeezie's gaming channel!
+https://viciscat.github.io/MineralContest/
 
 TODO:
 - Classes/Kits
