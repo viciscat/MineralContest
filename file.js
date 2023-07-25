@@ -1,5 +1,5 @@
 function scrollToTop() {
-    document.getElementById("header-nav").scrollIntoView({ behavior: 'smooth' });
+    document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
 
 }
 
