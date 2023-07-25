@@ -4,6 +4,16 @@ function scrollToTop() {
 }
 
 function scrollToText() {
-    document.getElementById("main_text").scrollIntoView({ behavior: 'smooth' });
+    document.getElementById("rules").scrollIntoView({ behavior: 'smooth' });
+
+}
+
+function scrollToDownload() {
+    document.getElementById("download").scrollIntoView({ behavior: 'smooth' });
+
+}
+
+function scrollToAbout() {
+    document.getElementById("about").scrollIntoView({ behavior: 'smooth' });
 
 }

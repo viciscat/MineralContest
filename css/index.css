@@ -4,6 +4,8 @@
 :root {
     --background_color_tableau: white;
     --bordures_interieurs: #dddddd;
+    --bg_color: #2e2e2e;
+    --text_color: rgb(236, 236, 236);
 }
 
 /* Réinitialisation des styles par défaut */
@@ -136,14 +138,15 @@ a {cursor: pointer;}
 }
 
 #rules {
-    padding: 200px 8%;
-    background-color: #2e2e2e;
-    color: rgb(236, 236, 236);
+    padding: 200px 8% 100px 8%;
+    background-color: var(--bg_color);
+    color: var(--text_color);
 }
 
 #rules h1 {
     padding-bottom: 40px;
 }
+
 
 #rules p {
     font-size: 1.2em;
@@ -154,6 +157,7 @@ a {cursor: pointer;}
     justify-content: center;
     align-items: center;
     line-height: 2;
+    padding: 2% 0 5% 0;
 }
 
 .box ul {
@@ -184,18 +188,63 @@ a {cursor: pointer;}
     height: 100px;
 }
 
-            /* Sous lignage des liens */
-#header-nav .submenu li a::after {
-    content: "";
-    position: absolute;
-    bottom: 5px;
-    left: 2px;
-    width: 0;
-    height: 0.1px;
-    background-color: #ffffff;
-    transition: width 0.4s ease-in-out;
+
+
+
+
+#download {
+    padding: 0 8% 0 8%;
+    background-color: var(--bg_color);
+    color: var(--text_color);
+    
 }
-            /* Sous lignage des liens hover */
-#header-nav .submenu li a:hover::after {
-    width: 100%;
-  }
+
+#download p {
+    margin: 2% 0;
+}
+
+#download #center_github_logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#download img {
+    display: inline-block;
+    width: 6%;
+    object-fit: contain;
+}
+
+#download_text {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#download #download_text a {
+    font-size: 1.5em;
+    padding: 4px 20px;
+    text-decoration: none;
+    color: white;
+    border: 1px solid white;
+}
+
+
+#about {
+    padding: 100px 8% 150px 8%;
+    background-color: var(--bg_color);
+    color: var(--text_color);
+}
+
+#about p {
+    padding-top: 2%;
+}
+
+#about a {
+    text-decoration: none;
+    color: white;
+}
+
+#about a:hover {
+    text-decoration: underline;
+}
