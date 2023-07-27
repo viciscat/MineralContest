@@ -22,26 +22,30 @@ public class MineralChunkGen extends ChunkGenerator {
     }
 
     @Override
-    public boolean shouldGenerateSurface() {
-        return true;
+    public boolean shouldGenerateSurface(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ) {
+        boolean isInX = chunkX >= -6 && chunkX <= 5;
+        boolean isInZ = chunkZ >= -6 && chunkZ <= 5;
+        return !worldInfo.getEnvironment().equals(World.Environment.NORMAL) || !isInX || !isInZ;
     }
 
     @Override
-    public boolean shouldGenerateCaves() {
-        return true;
-    }
-
-    @Override
-    public boolean shouldGenerateDecorations(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ) {
+    public boolean shouldGenerateCaves(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ) {
         boolean isInX = chunkX >= -5 && chunkX <= 4;
         boolean isInZ = chunkZ >= -5 && chunkZ <= 4;
         return !worldInfo.getEnvironment().equals(World.Environment.NORMAL) || !isInX || !isInZ;
     }
 
     @Override
+    public boolean shouldGenerateDecorations(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ) {
+        boolean isInX = chunkX >= -6 && chunkX <= 5;
+        boolean isInZ = chunkZ >= -6 && chunkZ <= 5;
+        return !worldInfo.getEnvironment().equals(World.Environment.NORMAL) || !isInX || !isInZ;
+    }
+
+    @Override
     public boolean shouldGenerateMobs(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ) {
-        boolean isInX = chunkX >= -5 && chunkX <= 4;
-        boolean isInZ = chunkZ >= -5 && chunkZ <= 4;
+        boolean isInX = chunkX >= -6 && chunkX <= 5;
+        boolean isInZ = chunkZ >= -6 && chunkZ <= 5;
         return !worldInfo.getEnvironment().equals(World.Environment.NORMAL) || !isInX || !isInZ;
     }
 

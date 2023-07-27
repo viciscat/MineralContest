@@ -313,7 +313,8 @@ public class GameHandler implements Runnable{
             }
 
             case CLASS_SELECTING -> {
-                String selectClass = PlainTextComponentSerializer.plainText().serialize(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.title"), player.locale()));
+                //noinspection DataFlowIssue
+                String selectClass = GlobalTranslator.translator().translate("mineral-contest.ui.class_select.title", player.locale()).toPattern();
 
 
                 objective.getScore(" ").setScore(9);
@@ -329,10 +330,12 @@ public class GameHandler implements Runnable{
             }
 
             case GAME -> {
+                //noinspection DataFlowIssue
+                String classString = StringUtils.capitalize(GlobalTranslator.translator().translate("mineral-contest.ui.class_select." + mineralPlayer.ClassString(), player.locale()).toPattern());
 
                 objective.getScore(" ").setScore(9);
                 objective.getScore("§7> §f" + PlainTextComponentSerializer.plainText().serialize(player.displayName())).setScore(8);
-                objective.getScore("§7Class: §b" + mineralPlayer.ClassString()).setScore(7);
+                objective.getScore("§7Class: §b" + classString).setScore(7);
                 objective.getScore("  ").setScore(6);
                 objective.getScore("§7> §fGame").setScore(5);
                 objective.getScore("Time").setScore(4);

@@ -57,6 +57,9 @@ public class MineralPlayer {
     }
     public void ClassString(String classString) {
         this.classString = classString;
+        Player().sendMessage(Component.text("--> ").append(
+                Component.translatable("mineral-contest.ui.class_select" + classString))
+        );
     }
 
 

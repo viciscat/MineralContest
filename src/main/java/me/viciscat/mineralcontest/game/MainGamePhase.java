@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -134,11 +135,15 @@ public class MainGamePhase {
                     switch (objective.getScore(entry).getScore()) {
                         case 4 -> {
                             scoreboard.resetScores(entry);
+
                             String zero = seconds < 10 ? "0" : "";
-                            objective.getScore("§7Time left: §b" + minutes + ":" + zero + seconds).setScore(4);
+                            String timeLeft = GlobalTranslator.translator().translate("mineral-contest.time_left", mineralPlayer.Player().locale()).toPattern();
+
+                            objective.getScore("§7" + timeLeft + ": §b" + minutes + ":" + zero + seconds).setScore(4);
                         }
                         case 0 -> {
                             scoreboard.resetScores(entry);
+
                             objective.getScore("§7Points: §b" + score).setScore(0);
                         }
                         default -> {

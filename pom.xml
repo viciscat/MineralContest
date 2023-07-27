@@ -6,7 +6,7 @@
 
     <groupId>me.viciscat</groupId>
     <artifactId>mineral-contest</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>Mineral Contest</name>
@@ -47,6 +47,10 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources-unfiltered</directory>
                 <filtering>false</filtering>
             </resource>
         </resources>

@@ -4,9 +4,11 @@ import me.viciscat.mineralcontest.MineralPlayer;
 import me.viciscat.mineralcontest.MineralTeam;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.Locale;
 import java.util.Random;
 
 public class ClassSelectingPhase {
@@ -32,8 +34,9 @@ public class ClassSelectingPhase {
 
         for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
             MineralTeam mineralTeam = mineralPlayer.MineralTeam();
-            String teamString = mineralTeam == null ? "None" : LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(mineralTeam.getTeamName(), mineralPlayer.Player().locale())).toUpperCase();
-            String classString = mineralPlayer.ClassString();
+            Locale playerLocale = mineralPlayer.Player().locale();
+            String teamString = mineralTeam == null ? "None" : LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(mineralTeam.getTeamName(), playerLocale)).toUpperCase();
+            String classString = StringUtils.capitalize(GlobalTranslator.translator().translate("mineral-contest.ui.class_select." + mineralPlayer.ClassString(), playerLocale).toPattern());
 
             Scoreboard scoreboard = mineralPlayer.PlayerScoreboard();
             Objective objective = scoreboard.getObjective("mineral_contest_gui");
@@ -48,8 +51,11 @@ public class ClassSelectingPhase {
                         }
                         case 4 -> {
                             scoreboard.resetScores(entry);
+
                             String zero = seconds < 10 ? "0" : "";
-                            objective.getScore("§7Starting in: §b" + minutes + ":" + zero + seconds).setScore(4);
+                            String startingIn = GlobalTranslator.translator().translate("mineral-contest.start_in", mineralPlayer.Player().locale()).toPattern();
+
+                            objective.getScore("§7"+ startingIn +": §b" + minutes + ":" + zero + seconds).setScore(4);
                         }
                         default -> {
                         }

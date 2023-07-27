@@ -7,6 +7,10 @@ commands:
     description: Testing command AGAIN
     usage: /<command>
     permission: mineral-contest.frickyou
+  test3:
+    description: Testing command AGAIN
+    usage: /<command>
+    permission: mineral-contest.frickyou2
   mineralcontest:
     description: Where all the things are done with this plugin
     aliases:

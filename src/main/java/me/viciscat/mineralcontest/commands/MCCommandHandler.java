@@ -14,6 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.FileUtil;
 import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class MCCommandHandler implements CommandExecutor {
@@ -156,13 +159,19 @@ public class MCCommandHandler implements CommandExecutor {
                     sender.sendPlainMessage("value: " + (object == null ? "null": object.toString()));
                     return true;
                 }
-                Object object =  configuration.get(args[1]);
+                Object object = configuration.get(args[1]);
+                plugin.getLogger().info(object.getClass().toString());
                 if (object instanceof Integer) {
                     try {
                         configuration.set(args[1], Integer.valueOf(args[2]));
                     } catch (NumberFormatException e) {
                         sender.sendPlainMessage("THIS SHIT AIN'T AN INT");
                         return true;
+                    }
+                } else if (object instanceof List<?>) {
+                    if (args[2].equals("set")) {
+                        ItemStack[] equipment = player.getEquipment().getArmorContents();
+                        plugin.getLogger().info(Arrays.toString(player.getInventory().getContents()));
                     }
                 }
                 sender.sendPlainMessage("THINGY HAS BEEN SET!");

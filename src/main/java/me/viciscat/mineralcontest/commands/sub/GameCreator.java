@@ -2,6 +2,7 @@ package me.viciscat.mineralcontest.commands.sub;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import me.viciscat.mineralcontest.MineralUtils;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
 import me.viciscat.mineralcontest.game.MineralChunkGen;
@@ -10,6 +11,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
@@ -38,44 +40,73 @@ public class GameCreator {
 
     private String worldName;
 
-    /**
-     * Calculates the average, nothing crazy
-     * @param integers List of integers
-     * @return Double
-     */
-    private double getAverage(List<Integer> integers) {
-        double average = 0;
-        for (Integer integer: integers) {
-            average += integer;
-        } return average / integers.size();
+    private int getHighestNonBullshitBlockYAt(int x, int z) {
+        int highestY = world.getHighestBlockYAt(x, z);
+        Block block = world.getBlockAt(x, highestY, z);
+        while (Tag.LOGS.isTagged(block.getType()) || Tag.LEAVES.isTagged(block.getType()) || Tag.REPLACEABLE.isTagged(block.getType())) {
+            highestY--;
+            block = world.getBlockAt(x, highestY, z);
+        }
+        return highestY;
     }
 
-    /**
-     * Calculates the variance
-     * @param integers List of integers
-     * @param average The already computed average, put -1 to compute the average with {@link #getAverage(List)}
-     * @return The variance as a double
-     */
-    private double getVariance(List<Integer> integers, double average) {
-        if (average < 0) {
-            average = getAverage(integers);
+    private Material getSurfaceMaterial(int x, int z) {
+        Biome biome = world.getBiome(
+                (int) (4*Math.round(x/4d)),
+                world.getHighestBlockYAt(x, z),
+                (int) (4*Math.round(z/4d)));
+
+        if (biome.getKey().getKey().contains("badlands")) {
+            return Material.RED_SAND;
+        } else if (biome.getKey().getKey().contains("desert")) {
+            return Material.SAND;
+        } else if (biome.getKey().getKey().contains("old_growth") && biome.getKey().getKey().contains("taiga")) {
+            return Material.PODZOL;
+        } else if (biome.getKey().getKey().contains("cave")) {
+            return Material.STONE;
+        } else {
+            return Material.GRASS_BLOCK;
         }
-        double variance = 0;
-        for (Integer integer : integers) {
-            variance += Math.pow(integer - average, 2);
-        }
-        return variance / integers.size();
     }
 
-    private int getHighestNonTreeBlockYAt(int x, int z) {
-        Block highestBlock = world.getHighestBlockAt(x, z);
-        Material material = highestBlock.getType();
-        boolean isPlant = material.equals(Material.KELP_PLANT) || material.equals(Material.KELP) || Tag.CORAL_BLOCKS.isTagged(material);
-        while (Tag.LOGS.isTagged(highestBlock.getType()) || Tag.LEAVES.isTagged(highestBlock.getType()) || highestBlock.getType().equals(Material.WATER) || isPlant) {
-            highestBlock.setType(Material.AIR);
-            highestBlock = world.getHighestBlockAt(x, z);
+    private Material getSubSurfaceMaterial(int x, int z) {
+        Biome biome = world.getBiome(
+                (int) (4*Math.round(x/4d)),
+                world.getHighestBlockYAt(x, z),
+                (int) (4*Math.round(z/4d)));
+
+        if (biome.getKey().getKey().contains("badlands")) {
+            return Material.RED_SANDSTONE;
+        } else if (biome.getKey().getKey().contains("desert")) {
+            return Material.SANDSTONE;
+        } else if (biome.getKey().getKey().contains("cave")) {
+            return Material.STONE;
+        } else {
+            return Material.DIRT;
         }
-        return world.getHighestBlockYAt(x, z);
+    }
+
+    private Material getSubWaterMaterial(int x, int z) {
+        Biome biome = world.getBiome(
+                (int) (4*Math.round(x/4d)),
+                world.getHighestBlockYAt(x, z),
+                (int) (4*Math.round(z/4d)));
+
+        if (biome.getKey().getKey().contains("badlands")) {
+            return Material.RED_SAND;
+        } else if (biome.getKey().getKey().contains("desert")) {
+            return Material.SAND;
+        } else if (biome.getKey().getKey().contains("old_growth")) {
+            return Material.PODZOL;
+        } else if (biome.getKey().getKey().contains("river") || biome.getKey().getKey().contains("ocean")) {
+            return Material.GRAVEL;
+        } else if (biome.getKey().getKey().contains("mangrove")) {
+            return Material.MUD;
+        } else if (biome.getKey().getKey().contains("cave")) {
+            return Material.STONE;
+        } else {
+            return Material.GRASS_BLOCK;
+        }
     }
 
     private boolean findWorld() {
@@ -152,31 +183,39 @@ public class GameCreator {
         Collections.sort(heights);
         // While the terrain varies too much, remove highest or lowest point depending on how it affects the variance
         // Doing so to find the best place to place the platform thing
-        while (getVariance(heights, -1) > 20 && heights.size() > 0) {
+        while (MineralUtils.getVariance(heights, -1) > 20 && heights.size() > 0) {
             // double prev_variance = getVariance(heights, -1);
-            if (getVariance(heights.subList(0, heights.size() - 2), -1) < getVariance(heights.subList(1, heights.size() - 1), -1)) {
+            if (MineralUtils.getVariance(heights.subList(0, heights.size() - 2), -1) < MineralUtils.getVariance(heights.subList(1, heights.size() - 1), -1)) {
                 heights.remove(heights.size() - 1);
             }   else { heights.remove(0); }
         }
 
         // The height that will be used for all platforms
-        int final_height = (int) getAverage(heights);
+        int final_height = (int) MineralUtils.getAverage(heights);
 
         // Place all the blocks of the platform and place air up until the max height
-        for (int i = -80; i < 80; i++) {
-            for (int j = -80; j < 80; j++) {
-                int x_min = -80 + SMOOTH_DISTANCE;
-                int x_max = 80 - SMOOTH_DISTANCE;
-                int z_min = -80 + SMOOTH_DISTANCE;
-                int z_max = 80 - SMOOTH_DISTANCE;
-                // logger.info(i + " " + j + " " + x_min + " " + x_max + " " + z_min + " " + z_max);
-                for (int k = highest + 5; k >= final_height; k--) {
-                    if (k == final_height && i > x_min && i < x_max && j > z_min && j < z_max) {
-                        world.getBlockAt(i, k, j).setType(Material.GRASS_BLOCK); // TODO: Adapt this depending on biome, example: sand in desert
-                    } else {
+        for (int i = -96; i < 96; i++) {
+            for (int j = -96; j < 96; j++) {
+                int highestY =  getHighestNonBullshitBlockYAt(i, j);
+                int surfaceHeight = (int) (highestY + (final_height - highestY) * MineralUtils.getFallOff((double) i/96, (double) j/96, 0.73, 0.98));
+                // MineralContest.getInstance().getLogger().info("x:" + i + " z:" + j + " " + surfaceHeight + " " + highestY);
+                Material subSurface = getSubSurfaceMaterial(i, j);
+                Material surface = getSurfaceMaterial(i, j);
+                Material surfaceWater = getSubWaterMaterial(i, j);
+                world.getBlockAt(i, surfaceHeight, j).setType(surface);
+                for (int k = Math.min(surfaceHeight, highestY) - 3; k <= Math.max(surfaceHeight, highestY); k++) {
+                    if (k < 61) {
+                        world.getBlockAt(i, k, j).setType(surfaceWater);
+                    }
+                    else if (k > surfaceHeight) {
                         world.getBlockAt(i, k, j).setType(Material.AIR);
+                    } else if (k < surfaceHeight && k > surfaceHeight - 3) {
+                        world.getBlockAt(i, k, j).setType(subSurface);
+                    } else if (k < surfaceHeight - 3) {
+                        world.getBlockAt(i, k, j).setType(Material.STONE);
                     }
                 }
+
 
             }
             // Log the progress in console
@@ -184,7 +223,8 @@ public class GameCreator {
             logger.info(percentage + " progress");
         }
         playerSender.sendPlainMessage("Doing final things");
-        Bukkit.getScheduler().runTask(plugin, () -> stage3(playerSender, final_height));
+        playerSender.teleport(new Location(world, 0, final_height+2, 0));
+        // Bukkit.getScheduler().runTask(plugin, () -> stage3(playerSender, final_height));
     }
 
     private void stage3(Player playerSender, int final_height) {
@@ -227,7 +267,7 @@ public class GameCreator {
             int smoothing = (int) (((noiseGenerator.noise(i/8d) + 1)/2) * EXTRA_SMOOTH_DISTANCE);
 
             int multiplier = isPositive ? 1: -1; // -1 if on negative side of axis
-            int side_height = getHighestNonTreeBlockYAt(
+            int side_height = getHighestNonBullshitBlockYAt(
                     isXAxis ? 81*multiplier: i,
                     isXAxis ? i: 81*multiplier); // Get the height of the outside to smooth between the platform and normal terrain
 

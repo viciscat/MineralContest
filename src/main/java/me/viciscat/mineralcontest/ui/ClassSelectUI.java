@@ -2,8 +2,9 @@ package me.viciscat.mineralcontest.ui;
 
 import me.viciscat.mineralcontest.game.GameHandler;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.text.MessageFormat;
 import java.util.Arrays;
 
 public class ClassSelectUI {
@@ -32,52 +33,71 @@ public class ClassSelectUI {
         // Agile
         ItemStack feather = new ItemStack(Material.FEATHER);
         ItemMeta featherMeta = feather.getItemMeta();
-        featherMeta.displayName(Component.text("Agile").decoration(TextDecoration.ITALIC, false));
+
+        featherMeta.displayName(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.agile").decoration(TextDecoration.ITALIC, false), player.locale()));
         feather.setItemMeta(featherMeta);
-        feather.lore(Arrays.asList(
-                Component.text("- You move 20% faster"),
-                Component.text("- You don't take fall damage")
-        ));
+
+        MessageFormat agileDescription = GlobalTranslator.translator().translate("mineral-contest.ui.class_select.agile.description", player.locale());
+        assert agileDescription != null;
+        feather.lore(
+                Arrays.stream(agileDescription.toPattern().split("\n")).map(s -> Component.text(s, NamedTextColor.GRAY)).toList()
+        );
+
 
         // Worker
         ItemStack gold = new ItemStack(Material.GOLD_INGOT);
         ItemMeta goldMeta = gold.getItemMeta();
-        goldMeta.displayName(Component.text("Worker").decoration(TextDecoration.ITALIC, false));
+
+        goldMeta.displayName(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.worker").decoration(TextDecoration.ITALIC, false), player.locale()));
         gold.setItemMeta(goldMeta);
-        gold.lore(Arrays.asList(
-                Component.text("- +25% Team score"),
-                Component.text("- You only have 5 hearts")
-        ));
+
+        MessageFormat workerDescription = GlobalTranslator.translator().translate("mineral-contest.ui.class_select.worker.description", player.locale());
+        assert workerDescription != null;
+        gold.lore(
+                Arrays.stream(workerDescription.toPattern().split("\n")).map(s -> Component.text(s, NamedTextColor.GRAY)).toList()
+        );
+
 
         // Robust
         ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
         ItemMeta chestplateMeta = chestplate.getItemMeta();
-        chestplateMeta.displayName(Component.text("Robust").decoration(TextDecoration.ITALIC, false));
+
+        chestplateMeta.displayName(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.robust").decoration(TextDecoration.ITALIC, false), player.locale()));
         chestplate.setItemMeta(chestplateMeta);
-        chestplate.lore(Arrays.asList(
-                Component.text("- 12 Hearts"),
-                Component.text("- Take 10% less damage")
-        ));
+
+        MessageFormat robustDescription = GlobalTranslator.translator().translate("mineral-contest.ui.class_select.robust.description", player.locale());
+        assert robustDescription != null;
+        chestplate.lore(
+                Arrays.stream(robustDescription.toPattern().split("\n")).map(s -> Component.text(s, NamedTextColor.GRAY)).toList()
+        );
+
 
         // Warrior
         ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta swordMeta = sword.getItemMeta();
-        swordMeta.displayName(Component.text("Warrior").decoration(TextDecoration.ITALIC, false));
+
+        swordMeta.displayName(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.warrior").decoration(TextDecoration.ITALIC, false), player.locale()));
         sword.setItemMeta(swordMeta);
-        sword.lore(Arrays.asList(
-                Component.text("- You deal +25% damage"),
-                Component.text("- You only have 8 hearts")
-        ));
+
+        MessageFormat warriorDescription = GlobalTranslator.translator().translate("mineral-contest.ui.class_select.warrior.description", player.locale());
+        assert warriorDescription != null;
+        sword.lore(
+                Arrays.stream(warriorDescription.toPattern().split("\n")).map(s -> Component.text(s, NamedTextColor.GRAY)).toList()
+        );
+
 
         // Miner
         ItemStack pickaxe = new ItemStack(Material.DIAMOND_PICKAXE);
         ItemMeta pickaxeMeta = pickaxe.getItemMeta();
-        pickaxeMeta.displayName(Component.text("Miner").decoration(TextDecoration.ITALIC, false));
+
+        pickaxeMeta.displayName(GlobalTranslator.render(Component.translatable("mineral-contest.ui.class_select.miner").decoration(TextDecoration.ITALIC, false), player.locale()));
         pickaxe.setItemMeta(pickaxeMeta);
-        pickaxe.lore(Arrays.asList(
-                Component.text("- Ores auto smelt when you mine them"),
-                Component.text("- You only have 2 rows in your inventory")
-        ));
+
+        MessageFormat minerDescription = GlobalTranslator.translator().translate("mineral-contest.ui.class_select.miner.description", player.locale());
+        assert minerDescription != null;
+        pickaxe.lore(
+                Arrays.stream(minerDescription.toPattern().split("\n")).map(s -> Component.text(s, NamedTextColor.GRAY)).toList()
+        );
 
         inventory.setItem(11, feather);
         inventory.setItem(12, gold);

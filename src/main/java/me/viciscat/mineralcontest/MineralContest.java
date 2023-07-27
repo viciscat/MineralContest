@@ -1,11 +1,7 @@
 package me.viciscat.mineralcontest;
 
-import me.viciscat.mineralcontest.commands.ArenaCommand;
-import me.viciscat.mineralcontest.commands.MCCommandHandler;
-import me.viciscat.mineralcontest.commands.TabCompletion;
-import me.viciscat.mineralcontest.commands.testing2Command;
+import me.viciscat.mineralcontest.commands.*;
 import me.viciscat.mineralcontest.game.GameHandler;
-import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -19,17 +15,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.structure.Structure;
 import org.bukkit.structure.StructureManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.*;
 
 public final class MineralContest extends JavaPlugin {
@@ -61,6 +54,7 @@ public final class MineralContest extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new MineralListener(), this);
         Objects.requireNonNull(getCommand("test2")).setExecutor(new testing2Command());
+        Objects.requireNonNull(getCommand("test3")).setExecutor(new testing3Command());
         PluginCommand mainCommand = getCommand("mineralcontest");
         assert mainCommand != null;
         mainCommand.setExecutor(new MCCommandHandler());

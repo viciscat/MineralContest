@@ -5,10 +5,13 @@ import me.viciscat.mineralcontest.MineralPlayer;
 import me.viciscat.mineralcontest.MineralTeam;
 import me.viciscat.mineralcontest.PlayerManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -71,13 +74,13 @@ public class RespawnPeriod extends BukkitRunnable {
             return;
         }
 
+        TextComponent respawnInBase = (TextComponent) GlobalTranslator.render(Component.translatable("mineral-contest.respawn.in", NamedTextColor.GOLD), respawningPlayer.locale());
+
         // SHOW TITLE
         respawningPlayer.showTitle(Title.title(
-                Component.text("Tu es mort", Style.style(TextColor.color(NamedTextColor.DARK_RED))),
-                Component.text("Tu vas respawn dans ", Style.style(TextColor.color(NamedTextColor.GOLD))).append(
-                        Component.text(time, TextColor.color(NamedTextColor.YELLOW))).append(
-                                Component.text(" secondes !", TextColor.color(NamedTextColor.GOLD))
-                ), Title.Times.times(Duration.ZERO, Duration.ofSeconds(2), Duration.ZERO)));
+                Component.translatable("mineral-contest.respawn.dead", Style.style(TextColor.color(NamedTextColor.DARK_RED))),
+                respawnInBase.replaceText(TextReplacementConfig.builder().matchLiteral("%%time%%").replacement(Component.text(time, NamedTextColor.YELLOW)).build()),
+                Title.Times.times(Duration.ZERO, Duration.ofSeconds(2), Duration.ZERO)));
         time--;
     }
 
