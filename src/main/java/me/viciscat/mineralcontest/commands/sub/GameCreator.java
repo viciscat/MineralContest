@@ -105,7 +105,7 @@ public class GameCreator {
         } else if (biome.getKey().getKey().contains("cave")) {
             return Material.STONE;
         } else {
-            return Material.GRASS_BLOCK;
+            return Material.DIRT;
         }
     }
 
@@ -202,17 +202,17 @@ public class GameCreator {
                 Material subSurface = getSubSurfaceMaterial(i, j);
                 Material surface = getSurfaceMaterial(i, j);
                 Material surfaceWater = getSubWaterMaterial(i, j);
-                world.getBlockAt(i, surfaceHeight, j).setType(surface);
+                MineralUtils.setBlockInNativeChunk(world, i, surfaceHeight, j, surface);
                 for (int k = Math.min(surfaceHeight, highestY) - 3; k <= Math.max(surfaceHeight, highestY); k++) {
                     if (k < 61) {
-                        world.getBlockAt(i, k, j).setType(surfaceWater);
+                        MineralUtils.setBlockInNativeChunk(world, i, k, j, surfaceWater);
                     }
                     else if (k > surfaceHeight) {
-                        world.getBlockAt(i, k, j).setType(Material.AIR);
+                        MineralUtils.setBlockInNativeChunk(world, i, k, j, Material.AIR);
                     } else if (k < surfaceHeight && k > surfaceHeight - 3) {
-                        world.getBlockAt(i, k, j).setType(subSurface);
+                        MineralUtils.setBlockInNativeChunk(world, i, k, j, subSurface);
                     } else if (k < surfaceHeight - 3) {
-                        world.getBlockAt(i, k, j).setType(Material.STONE);
+                        MineralUtils.setBlockInNativeChunk(world, i, k, j, Material.STONE);
                     }
                 }
 
@@ -223,16 +223,16 @@ public class GameCreator {
             logger.info(percentage + " progress");
         }
         playerSender.sendPlainMessage("Doing final things");
-        playerSender.teleport(new Location(world, 0, final_height+2, 0));
-        // Bukkit.getScheduler().runTask(plugin, () -> stage3(playerSender, final_height));
+        // playerSender.teleport(new Location(world, 0, final_height+2, 0));
+        Bukkit.getScheduler().runTask(plugin, () -> stage3(playerSender, final_height));
     }
 
     private void stage3(Player playerSender, int final_height) {
         // Now it's getting spicy
-        smooth_side(final_height, false, false);
+        /*smooth_side(final_height, false, false);
         smooth_side(final_height, false, true);
         smooth_side(final_height, true, false);
-        smooth_side(final_height, true, true);
+        smooth_side(final_height, true, true);*/
 
         plugin.structureMap.get("arene_cleaner").place(new Location(world, -21, final_height-14, -21), false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));
         plugin.structureMap.get("arene").place(new Location(world, -21, final_height-14, -21), false, StructureRotation.NONE, Mirror.NONE, 0, 1, new Random(0));

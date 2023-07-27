@@ -1,7 +1,12 @@
 package me.viciscat.mineralcontest;
 
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
 
 import java.util.List;
 import java.util.Random;
@@ -69,5 +74,14 @@ public class MineralUtils {
             double i = (magnitude - highRadius)/(highRadius - lowGradientRadius);
             return (Math.cos(i * Math.PI)+1)/2d;
         }
+    }
+
+    public static void setBlockInNativeChunk(World world, int x, int y, int z, Material material) {
+        net.minecraft.server.level.ServerLevel nmsLevel = ((CraftWorld) world).getHandle();
+        net.minecraft.world.level.chunk.LevelChunk nmsChunk = nmsLevel.getChunk(x >> 4, z >> 4);
+        BlockPos bp = new BlockPos(x, y, z);
+
+        BlockState state = CraftMagicNumbers.getBlock(material).defaultBlockState();
+        nmsChunk.setBlockState(bp, state, false);
     }
 }
