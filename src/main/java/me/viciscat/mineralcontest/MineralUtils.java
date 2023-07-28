@@ -64,16 +64,20 @@ public class MineralUtils {
         return variance / integers.size();
     }
 
-    public static double getFallOff(double x, double y, double highRadius, double lowGradientRadius) {
-        double magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        if (magnitude < highRadius) {
-            return 1;
-        } else if (magnitude > lowGradientRadius) {
-            return 0;
+    public static double getFallOff(double x, double y, double highRadius, double lowGradientRadius, double cornerRadius) {
+        double magnitudeCenter = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double magnitudeCorner = Math.sqrt(Math.pow(x - ((0>x)?-1:1), 2) + Math.pow(y - ((0>y)?-1:1), 2)); // Could be neat if it was more like an oval
+        double out;
+        if (magnitudeCenter < highRadius) {
+            out = 1;
+        } else if (magnitudeCenter > lowGradientRadius) {
+            out = 0;
         } else {
-            double i = (magnitude - highRadius)/(highRadius - lowGradientRadius);
-            return (Math.cos(i * Math.PI)+1)/2d;
+            double i = (magnitudeCenter - highRadius)/(highRadius - lowGradientRadius);
+            out = (Math.cos(i * Math.PI)+1)/2d;
         }
+        double j = Math.min(magnitudeCorner/cornerRadius, 1);
+        return Math.max(0, out - (Math.cos(j * Math.PI - Math.sin(j * Math.PI))+1)/2d);
     }
 
     public static void setBlockInNativeChunk(World world, int x, int y, int z, Material material) {

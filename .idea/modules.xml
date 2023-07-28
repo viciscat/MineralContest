@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/mineral-contest.iml" filepath="$PROJECT_DIR$/mineral-contest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mineral-contest.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mineral-contest.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mineral-contest.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mineral-contest.test.iml" />
     </modules>
   </component>
 </project>
