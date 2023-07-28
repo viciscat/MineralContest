@@ -35,6 +35,7 @@ public final class MineralContest extends JavaPlugin {
 
     public FileConfiguration config = getConfig();
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -94,11 +95,16 @@ public final class MineralContest extends JavaPlugin {
         config.addDefault("startLoot", stuff);
         config.setComments("startLoot", List.of(
                 "The stuff that the players will have when the game starts and when they respawn. Anything that is armor will be auto-equipped",
-                "Please don't edit it here, use '/mcontest config startLoot set' to set your current inventory as the new load-out."));
+                "Please don't edit it here, use '/mcontest config startLoot set' to set your current inventory as the new load-out.",
+                "To make it not drop on death add:",
+                "meta:",
+                "    PublicBukkitValues:",
+                "      mineralcontest:no_drop: 1b",
+                "to the ItemStack object."));
         config.addDefault("minimumFood", 10);
         config.setComments("minimumFood", List.of(
                 "The players' food level will never go underneath this value. Default: 10 (5 little meat things)"
-                ));
+        ));
         config.addDefault("worldNamePrefix", "mineral-contest_");
         config.setComments("worldNamePrefix", List.of(
                 "All mini game worlds name will start with that string"
@@ -107,7 +113,7 @@ public final class MineralContest extends JavaPlugin {
         actuallyReloadConfig();
 
         //noinspection DataFlowIssue
-        TranslationRegistry translationRegistry = TranslationRegistry.create(NamespacedKey.fromString("localization",this));
+        TranslationRegistry translationRegistry = TranslationRegistry.create(NamespacedKey.fromString("localization", this));
         ResourceBundle resourceBundleEN = ResourceBundle.getBundle("translations.main", Locale.ENGLISH, UTF8ResourceBundleControl.get());
         ResourceBundle resourceBundleFR = ResourceBundle.getBundle("translations.main", Locale.FRENCH, UTF8ResourceBundleControl.get());
         translationRegistry.registerAll(Locale.ENGLISH, resourceBundleEN, false);
@@ -123,8 +129,14 @@ public final class MineralContest extends JavaPlugin {
     }
 
     static public MineralContest instance;
-    public MineralContest() {instance = this;}
-    public static MineralContest getInstance() {return instance;}
+
+    public MineralContest() {
+        instance = this;
+    }
+
+    public static MineralContest getInstance() {
+        return instance;
+    }
 
     public void actuallyReloadConfig() {
         reloadConfig();

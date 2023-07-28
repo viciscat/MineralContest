@@ -15,17 +15,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.FileUtil;
 import org.codehaus.plexus.util.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class MCCommandHandler implements CommandExecutor {
 
@@ -160,6 +156,7 @@ public class MCCommandHandler implements CommandExecutor {
                     return true;
                 }
                 Object object = configuration.get(args[1]);
+                assert object != null;
                 plugin.getLogger().info(object.getClass().toString());
                 if (object instanceof Integer) {
                     try {
@@ -170,8 +167,17 @@ public class MCCommandHandler implements CommandExecutor {
                     }
                 } else if (object instanceof List<?>) {
                     if (args[2].equals("set")) {
-                        ItemStack[] equipment = player.getEquipment().getArmorContents();
-                        plugin.getLogger().info(Arrays.toString(player.getInventory().getContents()));
+                        ItemStack[] equipment = player.getInventory().getContents();
+                        List<ItemStack> stuff = new ArrayList<>();
+                        for (ItemStack itemStack : equipment) {
+                            if (itemStack != null) {
+                                stuff.add(itemStack);
+                            }
+                        }
+                        configuration.set(args[1], stuff);
+                    } else {
+                        sender.sendPlainMessage("Use \"set\" as a value to save your current inventory as the loadout, all data, like name, durability and yada yada will be saved");
+                        return true;
                     }
                 }
                 sender.sendPlainMessage("THINGY HAS BEEN SET!");
@@ -199,7 +205,7 @@ public class MCCommandHandler implements CommandExecutor {
                             sender.sendPlainMessage("deleted!");
                         } catch (IOException e) {
                             sender.sendPlainMessage("An error occured :(");
-                            e.printStackTrace();
+                            sender.sendPlainMessage(e.getMessage());
                         }
                     }
                 }
