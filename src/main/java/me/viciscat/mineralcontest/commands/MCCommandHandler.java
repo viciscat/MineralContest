@@ -5,6 +5,9 @@ import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
 import me.viciscat.mineralcontest.commands.sub.GameCreator;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -99,6 +102,7 @@ public class MCCommandHandler implements CommandExecutor {
                 }
                 if (!plugin.gameHandlerMap.containsKey(player.getWorld())) return false;
                 GameHandler handler = plugin.gameHandlerMap.get(player.getWorld());
+                if (handler.gamePhase != GameHandler.Phase.PREGAME) return true;
                 handler.startClassSelection();
                 return true;
             }
@@ -117,6 +121,10 @@ public class MCCommandHandler implements CommandExecutor {
                 if (requestedWorld == null || !MineralContest.getInstance().gameHandlerMap.containsKey(requestedWorld)) {
                     sender.sendPlainMessage("This game doesn't exist!!");
                     return false;
+                }
+                if (player.getWorld().equals(requestedWorld)) {
+                    sender.sendPlainMessage("You already in it dumb ass");
+                    return true;
                 }
                 GameHandler gameHandler = MineralContest.getInstance().gameHandlerMap.get(requestedWorld);
                 Location tpLocation = new Location(requestedWorld, -25, gameHandler.groundHeight + 1, 0);
@@ -242,6 +250,12 @@ public class MCCommandHandler implements CommandExecutor {
                     worldPlayer.teleport(mainWorld.getSpawnLocation());
                 }
                 Bukkit.getScheduler().runTaskLater(MineralContest.instance, () -> Bukkit.getServer().unloadWorld(world, false), 20);
+                return true;
+            }
+            case "list" -> {
+                player.sendMessage("List of the current games");
+                plugin.gameHandlerMap.forEach((world, gameHandler) ->
+                        player.sendMessage(Component.text(gameHandler.gameName()).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + gameHandler.gameName())).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)));
                 return true;
             }
             default -> {

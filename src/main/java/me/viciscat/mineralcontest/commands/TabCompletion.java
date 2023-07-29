@@ -39,6 +39,7 @@ public class TabCompletion implements TabCompleter {
                 returnList.add("config");
             }
             returnList.add("join");
+            returnList.add("list");
             returnList.removeIf(s -> !s.startsWith(args[0]));
             return returnList;
         } else if (args.length == 2) {

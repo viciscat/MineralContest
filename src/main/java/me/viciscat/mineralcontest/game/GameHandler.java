@@ -81,6 +81,10 @@ public class GameHandler implements Runnable {
         schedulerTask.cancel();
     }
 
+    public String gameName() {
+        return gameWorld.getName().replaceFirst("mineral-contest_", "");
+    }
+
     public GameHandler(World world, int durationSec, int firstChestDelay, int chestPeriod, int finalHeight) {
         gameWorld = world;
         gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
