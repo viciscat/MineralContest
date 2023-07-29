@@ -34,14 +34,18 @@ public class TabCompletion implements TabCompleter {
                 returnList.add("debug");
                 returnList.add("start");
                 returnList.add("reload");
-                returnList.add("delete_force");
+                // returnList.add("delete_force"); Just delete yourself in ur ftp idiot
+                returnList.add("close");
+                returnList.add("config");
             }
             returnList.add("join");
+            returnList.removeIf(s -> !s.startsWith(args[0]));
             return returnList;
         } else if (args.length == 2) {
             if (args[0].equals("config")) {
                 returnList.addAll(MineralContest.instance.config.getKeys(false));
             }
+            returnList.removeIf(s -> !s.startsWith(args[1]));
             return returnList;
         }
         return null;

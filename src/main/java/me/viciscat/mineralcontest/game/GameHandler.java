@@ -17,7 +17,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,9 +28,8 @@ import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.logging.Logger;
 
-public class GameHandler implements Runnable{
+public class GameHandler implements Runnable {
 
     public enum Phase {
         PREGAME,
@@ -40,7 +38,6 @@ public class GameHandler implements Runnable{
     }
 
     MineralContest plugin = JavaPlugin.getPlugin(MineralContest.class);
-    Logger logger = plugin.getLogger();
 
     World gameWorld;
     private final BukkitTask schedulerTask;
@@ -80,6 +77,9 @@ public class GameHandler implements Runnable{
     public PlayerManager playerManager = new PlayerManager();
 
 
+    public void close() {
+        schedulerTask.cancel();
+    }
 
     public GameHandler(World world, int durationSec, int firstChestDelay, int chestPeriod, int finalHeight) {
         gameWorld = world;
@@ -137,7 +137,7 @@ public class GameHandler implements Runnable{
         gamePhase = Phase.GAME;
         gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
         for (MineralPlayer mineralPlayer : playerManager.getPlayers()) {
-            if (mineralPlayer.ClassString() == "none") {
+            if (Objects.equals(mineralPlayer.ClassString(), "none")) {
                 mineralPlayer.ClassString(ClassSelectingPhase.classes[new Random().nextInt(ClassSelectingPhase.classes.length)]);
             }
             Player player = mineralPlayer.Player();
@@ -153,28 +153,29 @@ public class GameHandler implements Runnable{
                 switch (mineralPlayer.ClassString()){
                     case "worker" -> {
                         mineralTeam.addScoreMultiplier(0.25f);
-                        healthAttr.addModifier(new AttributeModifier("mineralcontest_worker", -10, AttributeModifier.Operation.ADD_NUMBER));
+                        healthAttr.addModifier(new AttributeModifier("mineral-contest_worker", -10, AttributeModifier.Operation.ADD_NUMBER));
                     }
                     case "agile" -> {
                         AttributeInstance speedAttr = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
                         assert speedAttr != null;
                         double base = speedAttr.getBaseValue();
-                        speedAttr.addModifier(new AttributeModifier("mineralcontest_agile", 0.2, AttributeModifier.Operation.MULTIPLY_SCALAR_1));
+                        speedAttr.addModifier(new AttributeModifier("mineral-contest_agile", 0.2, AttributeModifier.Operation.MULTIPLY_SCALAR_1));
                         speedAttr.setBaseValue(base);
                     }
-                    case "robust" -> healthAttr.addModifier(new AttributeModifier("mineralcontest_robust", 4, AttributeModifier.Operation.ADD_NUMBER));
+                    case "robust" -> healthAttr.addModifier(new AttributeModifier("mineral-contest_robust", 4, AttributeModifier.Operation.ADD_NUMBER));
 
                     case "miner" -> {
                         for (int i = 9; i < 18; i++) {
                             ItemStack barrier = new ItemStack(Material.BARRIER);
                             ItemMeta barrierMeta = barrier.getItemMeta();
                             barrierMeta.displayName(Component.text(""));
+                            //noinspection DataFlowIssue
                             barrierMeta.getPersistentDataContainer().set(NamespacedKey.fromString("no_drop", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
                             barrier.setItemMeta(barrierMeta);
                             player.getInventory().setItem(i, barrier);
                         }
                     }
-                    case "warrior" -> healthAttr.addModifier(new AttributeModifier("mineralcontest_warrior", -4, AttributeModifier.Operation.ADD_NUMBER));
+                    case "warrior" -> healthAttr.addModifier(new AttributeModifier("mineral-contest_warrior", -4, AttributeModifier.Operation.ADD_NUMBER));
 
                 }
                 double health = healthAttr.getValue();
@@ -217,6 +218,7 @@ public class GameHandler implements Runnable{
                 ItemMeta swordMeta = sword.getItemMeta();
                 TranslatableComponent translatable = Component.translatable("mineral-contest.class_selector_item_name").decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false);
 
+                //noinspection DataFlowIssue
                 swordMeta.getPersistentDataContainer().set(NamespacedKey.fromString("selection_item", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
                 swordMeta.displayName(GlobalTranslator.render(translatable, player.locale()).decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false));
                 sword.setItemMeta(swordMeta);

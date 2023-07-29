@@ -6,6 +6,7 @@ import me.viciscat.mineralcontest.MineralTeam;
 import me.viciscat.mineralcontest.MineralUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
@@ -35,6 +36,9 @@ public class MainGamePhase {
         loot[2] = Pair.of(3.0d, Material.IRON_INGOT);
         loot[3] = Pair.of(3.0d, Material.GOLD_INGOT);
 
+        TranslatableComponent announcement = Component.translatable("mineral-contest.arena.appear_announcement", Style.style(TextColor.color(NamedTextColor.BLUE)));
+        TranslatableComponent announcementSub = Component.translatable("mineral-contest.arena.appear_sub", Style.style(TextColor.color(NamedTextColor.AQUA)));
+
         int secBeforeChest = game.secondsLeft - game.nextChest;
 
         // CHEST SPAWNING
@@ -48,8 +52,10 @@ public class MainGamePhase {
 
                 for (Player player : game.gameWorld.getPlayers()) {
                     player.showTitle(Title.title(
-                            Component.text("A chest is going to appear!", Style.style(TextColor.color(NamedTextColor.BLUE))),
-                            Component.text("Do /arene to teleport your team!", Style.style(TextColor.color(NamedTextColor.AQUA)))));
+                            announcement,
+                            announcementSub));
+                    player.sendMessage(announcement);
+                    player.sendMessage(announcementSub);
                     player.showBossBar(game.gameBar);
                 }
 
@@ -94,7 +100,7 @@ public class MainGamePhase {
                 player.setGameMode(GameMode.ADVENTURE);
             }
         }
-        if (game.secondsLeft == -3) {game.gameWorld.sendMessage(Component.text("LES RESULTATS !"));}
+        if (game.secondsLeft == -3) {game.gameWorld.sendMessage(Component.text("===== SCORES:"));}
 
         if (game.secondsLeft == -5) {
             MineralTeam[] mineralTeams = new MineralTeam[4];
@@ -155,7 +161,7 @@ public class MainGamePhase {
     }
 
     static Component timerComponent(int time) {
-        return Component.text("Chest spawn in arena in: ",
+        return Component.translatable("mineral-contest.arena.appear_in",
                         Style.style(TextColor.color(NamedTextColor.AQUA)))
                 .append(Component.text(time,
                         Style.style(TextColor.color(NamedTextColor.BLUE))));

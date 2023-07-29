@@ -1,6 +1,5 @@
 package me.viciscat.mineralcontest;
 
-import com.destroystokyo.paper.ClientOption;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.game.RespawnPeriod;
@@ -18,7 +17,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -39,11 +37,9 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BoundingBox;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -117,7 +113,7 @@ public class MineralListener implements Listener {
                 }
             }
         }
-        finalScore *= playerTeam.getScoreMultiplier();
+        finalScore *= (int) playerTeam.getScoreMultiplier();
         playerTeam.addScore(finalScore);
         if (scoreToRemove <= 0) return;
         playerTeam.sendMessage(Component.text("Your team removed " + scoreToRemove + " points from other teams!"));
@@ -257,7 +253,6 @@ public class MineralListener implements Listener {
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
-        String localeString = player.getClientOption(ClientOption.LOCALE);
         if (!map.containsKey(player.getWorld())) {
             AttributeInstance[] attributeInstances = new AttributeInstance[]{
                     player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED),
@@ -268,7 +263,7 @@ public class MineralListener implements Listener {
             for (AttributeInstance attributeInstance : attributeInstances) {
                 assert attributeInstance != null;
                 for (AttributeModifier modifier : attributeInstance.getModifiers()) {
-                    if (modifier.getName().contains("mineralcontest")) {
+                    if (modifier.getName().contains("mineral-contest")) {
                         attributeInstance.removeModifier(modifier);
                     }
                 }
@@ -287,6 +282,7 @@ public class MineralListener implements Listener {
             // Compass
             ItemStack compass = new ItemStack(Material.COMPASS);
             ItemMeta compassMeta = compass.getItemMeta();
+            //noinspection DataFlowIssue
             compassMeta.getPersistentDataContainer().set(NamespacedKey.fromString("selection_item", MineralContest.getInstance()), PersistentDataType.BOOLEAN, true);
             TranslatableComponent translatable = Component.translatable("mineral-contest.team_selector_item_name").decoration(TextDecoration.BOLD, true).decoration(TextDecoration.ITALIC, false);
             compassMeta.displayName(GlobalTranslator.render(translatable, player.locale()));
@@ -304,14 +300,14 @@ public class MineralListener implements Listener {
                     .pages(List.of(
                             Component.text("English - 2").clickEvent(ClickEvent.changePage(2)).append(Component.text("\nFrancais - 6").clickEvent(ClickEvent.changePage(6))),
                             Component.text("Welcome to the Mineral Contest!", Style.style(NamedTextColor.BLACK, TextDecoration.BOLD, TextDecoration.UNDERLINED))
-                                    .append(Component.text("\nA concept originally created by the youtuber Squeezie.\n\nThis book shall explain briefly how this minigame works.\n\nThe objective of the game is to gain the most points, you get points").decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED,false)),
-                            Component.text("by bringing (smelted) minerals to your team's castle, in the ender chest in the middle. When minerals are put in, they dissapear and your team's score increases. Easy!\n\nThere's a few classes you can choose you can either, move faster, gain more points,"),
+                                    .append(Component.text("\nA concept originally created by the youtuber Squeezie.\n\nThis book shall explain briefly how this mini game works.\n\nThe objective of the game is to gain the most points, you get points").decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED,false)),
+                            Component.text("by bringing (smelted) minerals to your team's castle, in the ender chest in the middle. When minerals are put in, they disappear and your team's score increases. Easy!\n\nThere's a few classes you can choose you can either, move faster, gain more points,"),
                             Component.text("take less damage, deal more damage or auto smelt ore!\n\nSometimes in the game, usually three times, a chest will spawn in the arena! It contains a lot of minerals! You will be warned 10 seconds in advance and, BEFORE it spawns, you can do /arena to teleport"),
                             Component.text("your entire team to the arena.\n\nAnd that's it have fun!"),
                             Component.text("Bienvenue au Mineral Contest !", Style.style(NamedTextColor.BLACK, TextDecoration.BOLD, TextDecoration.UNDERLINED))
-                                    .append(Component.text("\nUn concept créé par le youtuber Squeezie.\n\nLe but de ce livre est de t'expliquer brievement comment ca marche.\n\nL'objectif est de gagner le plus de point, tu gagnes de points en").decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED,false)),
-                            Component.text("ramenant des minéraux (cuits) au coffre de l'ender au millieu du chateau de ton équipe.\nLes minéraux disparaient quand tu fermes les coffres et tu gagnes des points!\n\nTu as le choix entre plusieurs classes, tu peux marcher plus vite, prendre moins de dégat,"),
-                            Component.text("faire plus de dégat, faire gagner ton équipe plus de points et enfin cuire automatiquement les minerais que tu mines !\n\nUn coffre apparait de temps en temps dans l'arene (3 fois dans les parametres par défaut.)\nil contient plein de minéraux !"),
+                                    .append(Component.text("\nUn concept créé par le youtuber Squeezie.\n\nLe but de ce livre est de t'expliquer brièvement comment ca marche.\n\nL'objectif est de gagner le plus de point, tu gagnes de points en").decoration(TextDecoration.BOLD, false).decoration(TextDecoration.UNDERLINED,false)),
+                            Component.text("ramenant des minéraux (cuits) au coffre de l'ender au milieu du chateau de ton équipe.\nLes minéraux disparaissent quand tu fermes les coffres et tu gagnes des points!\n\nTu as le choix entre plusieurs classes, tu peux marcher plus vite, prendre moins de dégât,"),
+                            Component.text("faire plus de dégât, faire gagner ton équipe plus de points et enfin cuire automatiquement les minerais que tu mines !\n\nUn coffre apparait de temps en temps dans l'arène (3 fois dans les paramètres par défaut.)\nil contient plein de minéraux !"),
                             Component.text("Tu seras prévenu de son apparition 10 secondes avant et tu peux faire /arene AVANT que le coffre apparaissent pour téléporter ton équipe à l'arène.\n\nEt puis voila ! Amuse-toi bien !")
                     ))
                     .author(Component.text("Vic"))

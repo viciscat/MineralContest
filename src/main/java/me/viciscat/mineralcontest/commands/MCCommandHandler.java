@@ -211,21 +211,37 @@ public class MCCommandHandler implements CommandExecutor {
                 }
                 return true;
             }
-            case "unload" -> {
+            case "close" -> {
                 if (!sender.hasPermission("mineral-contest.admin")) {
                     sender.sendPlainMessage("No permission :(");
                     return false;
                 }
                 if (args.length == 1) {
-                    sender.sendPlainMessage("Format: /mineralcontest unload <world_name>");
+                    sender.sendPlainMessage("Format: /mineralcontest unload <world_name|this>");
                     return false;
                 }
-                World world = Bukkit.getServer().getWorld(args[1]);
+                World world;
+                if (args[1].equals("this")) {
+                    world = player.getWorld();
+                } else {
+                    world = Bukkit.getServer().getWorld(args[1]);
+                }
+
                 if (world == null) {
                     sender.sendPlainMessage("world no exist");
                     return false;
                 }
-                Bukkit.getServer().unloadWorld(world, false);
+                if (!plugin.gameHandlerMap.containsKey(world)) {
+                    sender.sendPlainMessage("not a Mineral Contest game");
+                    return false;
+                }
+                plugin.gameHandlerMap.get(world).close();
+                plugin.gameHandlerMap.remove(world);
+                World mainWorld = Bukkit.getServer().getWorlds().get(0);
+                for (Player worldPlayer : world.getPlayers()) {
+                    worldPlayer.teleport(mainWorld.getSpawnLocation());
+                }
+                Bukkit.getScheduler().runTaskLater(MineralContest.instance, () -> Bukkit.getServer().unloadWorld(world, false), 20);
                 return true;
             }
             default -> {
