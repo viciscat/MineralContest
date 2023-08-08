@@ -80,14 +80,6 @@ To win the game, mine ores, smelt them and take them to the Ender Chest in your 
 - **Download**
 You can download the plugin here! You will be redirected to the list of releases.
 
-## About
-- **About**
-This minigame was originally created by...
-...and was remade by...
-...from scratch. If you have a suggestion, an idea, or you found a bug, [create an issue here](link).
-This website was made by...
-No code was stolen (except from ChatGPT maybe) and the term 'Mineral Contest' hasn't been registered. Our code is open source.
-
 
 
 
