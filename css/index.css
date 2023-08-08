@@ -76,6 +76,18 @@ a {cursor: pointer;}
     text-decoration: underline !important;
 }
 
+#header-nav #flag {
+    margin-top: 10%;
+}
+
+#header-nav #flag img {
+    transition: transform 0.2s ease-out;
+}
+
+#header-nav #flag img:hover {
+    transform: scale(1.05);
+}
+
 
 
             
@@ -251,4 +263,46 @@ a {cursor: pointer;}
 
 #about a:hover {
     text-decoration: underline;
+}
+
+
+
+
+
+
+
+
+@media screen and (max-width: 1000px) {
+    #header-nav {
+        display: none;
+    }
+
+    #bg-container {
+        padding-top: 0;
+    }
+
+    .box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        line-height: 2;
+        padding: 3% 0 5% 0;
+    }
+    
+    .box ul {
+        margin-left: 50px;
+    }
+    
+    .box img {
+        width: 50%;
+        object-fit: contain;
+    }
+    
+    .box2n img, .box2n1 img {
+        padding: 3% 0;
+    }
+    
+
+
 }

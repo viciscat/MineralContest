@@ -1,11 +1,159 @@
-<html lang="en">
+<!DOCTYPE html>
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url = https://viciscat.github.io/MineralContest/fr/" />
-    <title>Redirecting...</title>
+    <title data-translate="title"></title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="shortcut icon" href="../imgs/diamond_pickaxe.png" type="image/x-icon">
+    <meta name="google-site-verification" content="RDWV38-jSeoMyv3n2TunYCrO6JjE_G8-Zwvopk-rzcw" />
+    <meta name="description" content="Jouez au mineral contest">
+
+
 </head>
+
 <body>
-    Redirecting to <a href="https://viciscat.github.io/MineralContest/fr/">https://viciscat.github.io/MineralContest/fr/</a>
+    <nav id="header-nav">
+        <div id="image-container">
+          <img src="../imgs/diamond_pickaxe.png" id="menu-icon">
+        </div>
+  
+        <ul id="menu-items">
+          <li>
+            <div class="link">
+              <a onclick="scrollToTop()" data-translate="nav_home"></a>
+            </div>
+          </li>
+
+          <li>
+            <div class="link">
+              <a onclick="scrollToText()" data-translate="nav_rules"></a>
+            </div>
+          </li>
+  
+          <li>
+            <div class="link">
+              <a onclick="scrollToDownload()" data-translate="nav_download"></a>
+            </div>
+          </li>
+  
+          <li>
+            <div class="link">
+              <a onclick="scrollToAbout()" data-translate="nav_about"></a>
+            </div>
+          </li>
+
+          <li>
+            <div class="link">
+                <a href="../screenshots.zip" data-translate="nav_moreImg" download></a>
+            </div>
+          </li>
+        </ul>
+
+        <ul id="menu-items">
+          <li>
+            <div class="link" id="flag">
+                <a onclick="toggleLanguage()"><img data-translate="target_language"></a>
+            </div>
+          </li>
+        </ul>
+    </nav>
+    
+
+
+    <div id="bg-container">
+        <img src="../imgs/screenshots/all_bases_night.webp" alt="Image">
+        <div id="gradient-overlay"></div>
+    </div>
+    <div id="noir"></div>
+    <div id="noir2"></div>
+
+    <div id="text-overlay">
+        <h1 data-translate="overlay_title"></h1>
+        <p data-translate="overlay_text"></p>
+    </div>
+
+
+    <div id="rules">
+        <h1 data-translate="rules_title"></h1>
+        <h2 data-translate="rules_1_title"></h1>
+        <div class="box box2n">
+            <p data-translate="rules_1_text"></p>
+            <img src="../imgs/screenshots/i_select_team.webp">
+        </div>
+
+        <h2 data-translate="rules_2_title"></h2>
+        <div class="box box2n1">
+            <img src="../imgs/screenshots/i_select_class.webp">
+            <div>
+                <p data-translate="rules_2_text"></p>
+                <ul>
+                    <li data-translate="rules_2_li_1"></li>
+                    <li data-translate="rules_2_li_2"></li>
+                    <li data-translate="rules_2_li_3"></li>
+                    <li data-translate="rules_2_li_4"></li>
+                    <li data-translate="rules_2_li_5"></li>
+                      
+                </ul>
+                <br>
+                <p data-translate="rules_2_text_2"></p>
+            </div>
+            
+        </div>
+
+        <h2 data-translate="rules_3_title"></h2>
+        <div class="box box2n">
+            <p data-translate="rules_3_text"></p>
+            <img src="../imgs/screenshots/i_player_view.webp">
+        </div>
+
+        <h2 data-translate="rules_4_title"></h2>
+        <div class="box box2n1">
+            <img src="../imgs/screenshots/crafting_table.webp">
+            <p data-translate="rules_4_text"></p>
+        </div>
+
+        <h2 data-translate="rules_5_title"></h2>
+        <div class="box box2n">
+            <div>
+            <p data-translate="rules_5_text"></p>
+
+            </div>
+            <img src="../imgs/points_table.png">
+        </div>
+    </div>
+
+
+    <div id="download">
+        <h1 data-translate="dl_title"></h1>
+        <p data-translate="dl_text"></p>
+        <div id="center_github_logo"><img src="../imgs/github_logo.png"></div>
+        <div id="download_text"><a href="https://github.com/viciscat/MineralContest/releases" target="_blank">Download</a></div>
+    </div>
+
+
+    <div id="about">
+        <h1 data-translate="about_title"></h1>
+        <p>
+            <span data-translate="about_text_1"></span>
+            <a href="https://www.youtube.com/channel/UCWeg2Pkate69NFdBeuRFTAw" target="_blank"><i>Squeezie</i></a>
+            <span data-translate="about_text_2"></span> 
+            <a href="https://github.com/viciscat/MineralContest" target="_blank"><i>VicIsCat</i></a> 
+            <span data-translate="about_text_3"></span> 
+            <a href="https://github.com/viciscat/MineralContest/issues" target="_blank"><u> <span data-translate="about_text_4"></span></u></a>
+            <span data-translate="about_text_5"></span>
+            <i>Ashokas</i>.
+        </p>
+        <p data-translate="about_text_6"></p>
+    </div>
+
+
+
+
+
+<script src="nav_scroll.js"></script>
+<script src="translations.js"></script>
+
 </body>
+
+
 </html>

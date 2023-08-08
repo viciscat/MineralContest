@@ -1,0 +1,58 @@
+{
+    "target_language" : "fr",
+    "title" : "Mineral Contest - Accueil",
+
+
+    "nav_home" : "Home",
+    "nav_rules" : "Rules",
+    "nav_download" : "Download",
+    "nav_about" : "About",
+    "nav_moreImg" : "See more images",
+
+
+    "overlay_title" : "Mineral Contest",
+    "overlay_text" : "The best team-based multiplayer Minecraft game mode, and we're totally NOT biased!",
+
+
+    "rules_title" : "What is the Mineral Contest?",
+
+    "rules_1_title" : "The teams",
+    "rules_1_text" : "The Mineral Contest is played with 4 teams. To maximise the amount of fun, we advise you to play with 4 players in each team. However, there is no minimum number of players required, so you can also play 1 vs 1, but in that case, the fun factor will be very low. To start the game, right-click on the compass and select the colour of your choice.",
+
+    "rules_2_title" : "The classes",
+    "rules_2_text" : "When the game starts, you have 45sec to choose a class from among :",
+    "rules_2_li_1" : "Agile (feather): You move 20% faster and you don't take any fall damage.",
+    "rules_2_li_2" : "Worker (gold): You increase the points your team win by 25% but you only have 5 hearts.",
+    "rules_2_li_3" : "Robust (armor): You have 12 hearts and the damage you take is reduced by 12%",
+    "rules_2_li_4" : "Warrior (sword): You deal 25% more damage but you only have 8 hearts.",
+    "rules_2_li_5" : "Miner (pickaxe): The ores you mine auto-smelt! But you only have 2 rows in your inventory.",
+    "rules_2_text_2" : "If you don't choose one time, RNGesus shall choose for you",
+
+    "rules_3_title" : "Start of the game",
+    "rules_3_text" : "When the game starts, you will have an iron armor, a stone sword, a bow and 32 arrows and 16 steaks! You will get those items back when you respawn, but they don't drop when you die!",
+    
+    "rules_4_title" : "... What now?",
+    "rules_4_text" : "Take a your steak, and beat up mother nature! Craft a crafting table, make a pickaxe and go mining some ore to gain some points!",
+
+    "rules_5_title" : "How do I win?",
+    "rules_5_text" : "To win the game, mine ores, smelt them and take them to the Ender Chest in you castle! The shinier it is, the more points you earn. Note that redstone removes 1 point from all the other teams!",
+
+
+    "dl_title" : "Download",
+    "dl_text" : "You can download the plugin here! You will be redirect to the list of releases.",
+
+
+    "about_title" : "About",
+    "about_text_1" : "This minigame was originally created by ",
+    "about_text_2" : "and was remade by",
+    "about_text_3" : "from scratch. If you have suggestion, an idea or you found a bug,",
+    "about_text_4" : "create an issue here",
+    "about_text_5" : "! This website was made by ",
+    "about_text_6" : "No code was stolen (except from ChatGPT maybe) and the term 'Mineral Contest' hasn't been registered. Our code is open source."
+
+    
+
+
+
+
+}
