@@ -2,9 +2,9 @@
 A recreation of the minigame first seen on Squeezie's gaming channel!
 https://viciscat.github.io/MineralContest/
 
-[Français](#français) 
 
-Cliquez [ici](#en) pour afficher la version anglais de cette page.
+[Français](#français) | [English](#english) 
+
 
 
 # Français
@@ -44,7 +44,7 @@ Pour remporter la partie, l'objectif est simple : miner les trucs qui brillent l
 Vous pouvez télécharger le Mineral Contest en cliquant sur le bouton ci-dessous. Vous serez redirigé vers la page
 
 
-# English {#en}
+# English
 - **Mineral Contest**
 - The best team-based multiplayer Minecraft game mode, and we're totally NOT biased!
 
