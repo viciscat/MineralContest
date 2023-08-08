@@ -2,12 +2,12 @@
 A recreation of the minigame first seen on Squeezie's gaming channel!
 https://viciscat.github.io/MineralContest/
 
-[Francais](#francais) 
+[Français](#français) 
 
 Cliquez [ici](#en) pour afficher la version anglais de cette page.
 
 
-# Francais
+# Français
 - **Mineral Contest**
 - Le meilleur mode de jeu Minecraft multijoueur par équipes et nous sommes parfaitement objectifs !
 
