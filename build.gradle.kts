@@ -25,12 +25,12 @@ repositories {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.2-R0.1-SNAPSHOT")
     // compileOnly("io.papermc.paper:paper-api:1.20-R0.1-SNAPSHOT")
 }
 
 group = "me.viciscat"
-version = "0.1.0"
+version = "0.1.1"
 description = "Mineral Contest"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
