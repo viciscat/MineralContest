@@ -67,10 +67,12 @@ public final class MineralContest extends JavaPlugin {
         // CONFIG DEFAULTS
         config.addDefault("gameDuration", 3600);
         config.setComments("gameDuration", List.of("How long the game will last, in seconds. Default: 3600"));
-        config.addDefault("firstChestDelay", 900);
-        config.setComments("firstChestDelay", List.of("Time before the first arena chest appears, still in seconds. Default: 900"));
-        config.addDefault("chestPeriod", 1200);
-        config.setComments("chestPeriod", List.of("Time between the subsequent chests, in seconds again, obviously. Default: 1200"));
+        config.addDefault("minChestDelay", 450);
+        config.setComments("minChestDelay", List.of("Minimum delay between chest spawns. (seconds) Default: 450"));
+        config.addDefault("maxChestDelay", 1200);
+        config.setComments("maxChestDelay", List.of("Maximum delay between chest spawns. (seconds) Default: 1200"));
+        config.addDefault("spawnFinalChest", true);
+        config.setComments("spawnFinalChest", List.of("Should a chest always spawn 3 minutes before the end. Default: true"));
         config.options().copyDefaults(true);
 
         // START LOOT
@@ -99,7 +101,7 @@ public final class MineralContest extends JavaPlugin {
                 "To make it not drop on death add:",
                 "meta:",
                 "    PublicBukkitValues:",
-                "      mineralcontest:no_drop: 1b",
+                "      mineral-contest:no_drop: 1b",
                 "to the ItemStack object."));
         config.addDefault("minimumFood", 10);
         config.setComments("minimumFood", List.of(

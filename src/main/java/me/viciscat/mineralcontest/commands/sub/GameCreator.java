@@ -3,6 +3,7 @@ package me.viciscat.mineralcontest.commands.sub;
 import me.viciscat.mineralcontest.MineralUtils;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.MineralContest;
+import me.viciscat.mineralcontest.game.GameParameters;
 import me.viciscat.mineralcontest.game.MineralChunkGen;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -249,10 +250,8 @@ public class GameCreator {
                     Component.text("/mineralcontest join " + worldName).clickEvent(ClickEvent.suggestCommand("/mineralcontest join " + worldName)).decoration(TextDecoration.BOLD, true).color(NamedTextColor.YELLOW)
             ));
         }
-        int gameDuration = plugin.config.getInt("gameDuration", 3600);
-        int firstChestDelay = plugin.config.getInt("firstChestDelay", 900);
-        int chestPeriod = plugin.config.getInt("chestPeriod", 1200);
-        plugin.gameHandlerMap.put(world, new GameHandler(world, gameDuration, firstChestDelay, chestPeriod, final_height));
-        playerSender.sendPlainMessage("Game created with settings: " + gameDuration + " " + firstChestDelay + " " + chestPeriod);
+        GameParameters gameParameters = GameParameters.fromConfig();
+        plugin.gameHandlerMap.put(world, new GameHandler(world, final_height, gameParameters));
+        playerSender.sendPlainMessage("Game created with settings: " + gameParameters.DURATION + " " + gameParameters.MIN_SPAWN_DELAY + " " + gameParameters.MAX_SPAWN_DELAY);
     }
 }

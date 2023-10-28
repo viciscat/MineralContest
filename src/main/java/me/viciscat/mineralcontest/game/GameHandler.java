@@ -42,9 +42,13 @@ public class GameHandler implements Runnable {
     World gameWorld;
     private final BukkitTask schedulerTask;
 
+    public final Random random = new Random();
+
     public int getSecondsLeft() {
         return secondsLeft;
     }
+
+    public final GameParameters parameters;
 
     int secondsLeft; // seconds left till the end of the game
     int classSelectSecondsLeft = 45; // seconds left till the end class selection CRAZY
@@ -53,8 +57,6 @@ public class GameHandler implements Runnable {
     public int getNextChest() {
         return nextChest;
     }
-
-    int CHEST_PERIOD; // How often chest spawns
     public int groundHeight;
 
     BossBar gameBar;
@@ -81,17 +83,19 @@ public class GameHandler implements Runnable {
         schedulerTask.cancel();
     }
 
+    private final String prefix = plugin.config.getString("worldNamePrefix", "mineral-contest_");
     public String gameName() {
-        return gameWorld.getName().replaceFirst("mineral-contest_", "");
+        assert prefix != null;
+        return gameWorld.getName().replaceFirst(prefix, "");
     }
 
-    public GameHandler(World world, int durationSec, int firstChestDelay, int chestPeriod, int finalHeight) {
+    public GameHandler(World world, int finalHeight, GameParameters gameParameters) {
+        parameters = gameParameters;
         gameWorld = world;
         gameWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         gameWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        secondsLeft = durationSec;
-        nextChest = durationSec - firstChestDelay;
-        CHEST_PERIOD = chestPeriod;
+        secondsLeft = gameParameters.DURATION;
+        nextChest = secondsLeft - random.nextInt(parameters.MIN_SPAWN_DELAY, parameters.MAX_SPAWN_DELAY);
         groundHeight = finalHeight;
 
         teams = new MineralTeam[]{
@@ -145,6 +149,7 @@ public class GameHandler implements Runnable {
                 mineralPlayer.ClassString(ClassSelectingPhase.classes[new Random().nextInt(ClassSelectingPhase.classes.length)]);
             }
             Player player = mineralPlayer.Player();
+            player.closeInventory();
             player.getInventory().clear();
             player.setExp(0);
             MineralTeam mineralTeam = mineralPlayer.MineralTeam();

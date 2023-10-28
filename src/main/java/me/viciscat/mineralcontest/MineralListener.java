@@ -263,7 +263,7 @@ public class MineralListener implements Listener {
             for (AttributeInstance attributeInstance : attributeInstances) {
                 assert attributeInstance != null;
                 for (AttributeModifier modifier : attributeInstance.getModifiers()) {
-                    if (modifier.getName().contains("mineral-contest")) {
+                    if (modifier.getName().contains("mineral-contest") || modifier.getName().contains("mineralcontest")) {
                         attributeInstance.removeModifier(modifier);
                     }
                 }

@@ -60,12 +60,32 @@ public class MainGamePhase {
                 }
 
             }
-            game.gameBar.progress((float) secBeforeChest /10);
+            game.gameBar.progress((float) secBeforeChest / 10);
             game.gameBar.name(timerComponent(secBeforeChest));
 
 
             if (secBeforeChest == 0) {
-                game.nextChest -= game.CHEST_PERIOD;
+                GameParameters params = game.parameters;
+                int randomizedDelay = game.random.nextInt(params.MIN_SPAWN_DELAY, params.MAX_SPAWN_DELAY);
+                if (game.nextChest <= 180) { // Don't want to spawn a chest less than 3 minutes before the end
+                    game.nextChest = Integer.MIN_VALUE;
+                } else if (params.SPAWN_FINAL_CHEST) {
+                        // Will the time before the final chest be too smol?
+                        if (game.nextChest - randomizedDelay + 180 < params.MIN_SPAWN_DELAY) {
+                            // If we skip to final chest will it too big
+                            if (game.nextChest + 180 > params.MAX_SPAWN_DELAY) {
+                                game.nextChest -= (params.MIN_SPAWN_DELAY + params.MAX_SPAWN_DELAY) / 2;
+                            } else {
+                                game.nextChest = 180;
+                            }
+                        } else {
+                            game.nextChest -= randomizedDelay;
+                        }
+
+
+                } else {
+                    game.nextChest -= game.random.nextInt(params.MIN_SPAWN_DELAY, params.MAX_SPAWN_DELAY);
+                }
                 for (Player player : game.gameWorld.getPlayers()) {
                     player.hideBossBar(game.gameBar);
                     // spawn the funni chest
@@ -94,13 +114,15 @@ public class MainGamePhase {
                 player.showTitle(Title.title(
                         Component.text("FINISH !"),
                         Component.text("")
-                        ));
+                ));
                 player.teleport(new Location(game.gameWorld, -25, game.groundHeight + 1, 0));
                 player.getInventory().clear();
                 player.setGameMode(GameMode.ADVENTURE);
             }
         }
-        if (game.secondsLeft == -3) {game.gameWorld.sendMessage(Component.text("===== SCORES:"));}
+        if (game.secondsLeft == -3) {
+            game.gameWorld.sendMessage(Component.text("===== SCORES:"));
+        }
 
         if (game.secondsLeft == -5) {
             MineralTeam[] mineralTeams = new MineralTeam[4];
@@ -124,7 +146,7 @@ public class MainGamePhase {
             minutes = game.secondsLeft / 60;
             seconds = game.secondsLeft % 60;
         }
-        for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
+        for (MineralPlayer mineralPlayer : game.playerManager.getPlayers()) {
             int score;
             MineralTeam mineralTeam = mineralPlayer.MineralTeam();
             if (mineralTeam == null) {
