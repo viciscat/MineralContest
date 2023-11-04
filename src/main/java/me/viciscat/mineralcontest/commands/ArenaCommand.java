@@ -34,7 +34,7 @@ public class ArenaCommand implements CommandExecutor {
         if (!map.containsKey(player.getWorld())) return false;
         GameHandler gameHandler = map.get(player.getWorld());
         MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(player);
-        MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+        MineralTeam mineralTeam = mineralPlayer.getMineralTeam();
         if (mineralTeam == null) return false;
         int secBeforeChest = gameHandler.getSecondsLeft() - gameHandler.getNextChest();
         if (secBeforeChest <= 10 && secBeforeChest >= 0) {

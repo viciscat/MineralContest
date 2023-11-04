@@ -1,16 +1,12 @@
 package me.viciscat.mineralcontest;
 
-import com.destroystokyo.paper.ClientOption;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Criteria;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -19,19 +15,19 @@ import java.util.UUID;
 public class MineralPlayer {
 
     private final UUID playerUUID;
-    public UUID PlayerUUID() {
+    public UUID getPlayerUUID() {
         return playerUUID;
     }
-    public Player Player() {
+    public Player getPlayer() {
         return Bukkit.getPlayer(playerUUID);
     }
 
 
     private MineralTeam mineralTeam = null;
-    public void MineralTeam(MineralTeam mineralTeam) {
+    public void setMineralTeam(MineralTeam mineralTeam) {
         this.mineralTeam = mineralTeam;
     }
-    public @Nullable MineralTeam MineralTeam() {
+    public @Nullable MineralTeam getMineralTeam() {
         return mineralTeam;
     }
 
@@ -39,9 +35,25 @@ public class MineralPlayer {
     public MineralPlayer(UUID playerUUID) {
         this.playerUUID = playerUUID;
         Scoreboard newScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+        Team redTeam = newScoreboard.registerNewTeam("red");
+        Team blueTeam = newScoreboard.registerNewTeam("blue");
+        Team greenTeam = newScoreboard.registerNewTeam("green");
+        Team yellowTeam = newScoreboard.registerNewTeam("yellow");
+
+
+        // Adding teams for each player "locally" so it can be displayed in their player list
+        redTeam.prefix(Component.text("R ").style(Style.style().color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true)));
+        blueTeam.prefix(Component.text("B ").style(Style.style().color(NamedTextColor.DARK_BLUE).decoration(TextDecoration.BOLD, true)));
+        greenTeam.prefix(Component.text("G ").style(Style.style().color(NamedTextColor.GREEN).decoration(TextDecoration.BOLD, true)));
+        yellowTeam.prefix(Component.text("Y ").style(Style.style().color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)));
+
         Objective newObjective = newScoreboard.registerNewObjective("mineral_contest_gui", Criteria.DUMMY, Component.text("Mineral Contest").decoration(TextDecoration.BOLD, true).color(NamedTextColor.DARK_AQUA));
+        Objective playerHealthObjective = newScoreboard.registerNewObjective("player_health", Criteria.HEALTH, Component.text("HP"));
+        playerHealthObjective.setDisplaySlot(DisplaySlot.BELOW_NAME);
         newObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         playerScoreboard = newScoreboard;
+
         locale = Bukkit.getPlayer(playerUUID).locale();
     }
 
@@ -57,7 +69,7 @@ public class MineralPlayer {
     }
     public void ClassString(String classString) {
         this.classString = classString;
-        Player().sendMessage(Component.text("--> ").append(
+        getPlayer().sendMessage(Component.text("--> ").append(
                 Component.translatable("mineral-contest.ui.class_select." + classString))
         );
     }

@@ -1,16 +1,15 @@
 package me.viciscat.mineralcontest.commands;
 
-import me.viciscat.mineralcontest.game.MineralChunkGen;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import me.viciscat.mineralcontest.MineralContest;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Random;
 
 public class testing3Command implements CommandExecutor {
     /**
@@ -28,10 +27,13 @@ public class testing3Command implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return false;
-        WorldCreator creator = new WorldCreator(String.valueOf(new Random().nextLong()));
-        World world = creator.generator(new MineralChunkGen()).createWorld();
-        assert world != null;
-        player.teleport(new Location(world, 0, world.getHighestBlockYAt(0, 0) + 2, 0));
+        World world = player.getWorld();
+        Block block = world.getBlockAt(0, 80, 0);
+        block.setType(Material.CHEST);
+        if (block.getState() instanceof Chest chest) {
+            chest.getPersistentDataContainer().set(NamespacedKey.fromString("testy", MineralContest.getInstance()), PersistentDataType.STRING, "I love Tacos!");
+            chest.update();
+        }
         return true;
     }
 }

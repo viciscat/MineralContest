@@ -1,9 +1,7 @@
 package me.viciscat.mineralcontest.game;
 
-import it.unimi.dsi.fastutil.Pair;
 import me.viciscat.mineralcontest.MineralPlayer;
 import me.viciscat.mineralcontest.MineralTeam;
-import me.viciscat.mineralcontest.MineralUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -14,12 +12,7 @@ import net.kyori.adventure.title.Title;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -28,13 +21,7 @@ import java.util.Collections;
 
 public class MainGamePhase {
 
-    static Pair<Double, Material>[] loot = new Pair[4];
-
     static void phase(GameHandler game) {
-        loot[0] = Pair.of(1.0d, Material.EMERALD);
-        loot[1] = Pair.of(2.0d, Material.DIAMOND);
-        loot[2] = Pair.of(3.0d, Material.IRON_INGOT);
-        loot[3] = Pair.of(3.0d, Material.GOLD_INGOT);
 
         TranslatableComponent announcement = Component.translatable("mineral-contest.arena.appear_announcement", Style.style(TextColor.color(NamedTextColor.BLUE)));
         TranslatableComponent announcementSub = Component.translatable("mineral-contest.arena.appear_sub", Style.style(TextColor.color(NamedTextColor.AQUA)));
@@ -70,17 +57,17 @@ public class MainGamePhase {
                 if (game.nextChest <= 180) { // Don't want to spawn a chest less than 3 minutes before the end
                     game.nextChest = Integer.MIN_VALUE;
                 } else if (params.SPAWN_FINAL_CHEST) {
-                        // Will the time before the final chest be too smol?
-                        if (game.nextChest - randomizedDelay + 180 < params.MIN_SPAWN_DELAY) {
-                            // If we skip to final chest will it too big
-                            if (game.nextChest + 180 > params.MAX_SPAWN_DELAY) {
-                                game.nextChest -= (params.MIN_SPAWN_DELAY + params.MAX_SPAWN_DELAY) / 2;
-                            } else {
-                                game.nextChest = 180;
-                            }
+                    // Will the time before the final chest be too smol?
+                    if (game.nextChest - randomizedDelay + 180 < params.MIN_SPAWN_DELAY) {
+                        // If we skip to final chest will it too big
+                        if (game.nextChest + 180 > params.MAX_SPAWN_DELAY) {
+                            game.nextChest -= (params.MIN_SPAWN_DELAY + params.MAX_SPAWN_DELAY) / 2;
                         } else {
-                            game.nextChest -= randomizedDelay;
+                            game.nextChest = 180;
                         }
+                    } else {
+                        game.nextChest -= randomizedDelay;
+                    }
 
 
                 } else {
@@ -88,22 +75,11 @@ public class MainGamePhase {
                 }
                 for (Player player : game.gameWorld.getPlayers()) {
                     player.hideBossBar(game.gameBar);
-                    // spawn the funni chest
-                    game.gameWorld.getBlockAt(0, game.groundHeight - 11, 0).setType(Material.CHEST);
-                    BlockState state = game.gameWorld.getBlockAt(0, game.groundHeight - 11, 0).getState();
-                    if (state instanceof Chest chest) {
-                        Inventory inventory = chest.getInventory();
-                        chest.customName(Component.text("Arena chest"));
-                        for (int i = 0; i < 27; i++) {
-                            Material chosenMaterial = MineralUtils.weightedRandom(loot);
-                            if (chosenMaterial == null) {
-                                chosenMaterial = Material.AIR;
-                            }
-                            inventory.setItem(i, new ItemStack(chosenMaterial));
-                        }
-                        inventory.setItem(13, new ItemStack(Material.EMERALD));
-                    }
+
                 }
+                // spawn the funni chest
+                game.arenaChestHandler.start();
+
             }
         }
 
@@ -148,7 +124,7 @@ public class MainGamePhase {
         }
         for (MineralPlayer mineralPlayer : game.playerManager.getPlayers()) {
             int score;
-            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+            MineralTeam mineralTeam = mineralPlayer.getMineralTeam();
             if (mineralTeam == null) {
                 score = -1;
             } else {
@@ -165,7 +141,7 @@ public class MainGamePhase {
                             scoreboard.resetScores(entry);
 
                             String zero = seconds < 10 ? "0" : "";
-                            String timeLeft = GlobalTranslator.translator().translate("mineral-contest.time_left", mineralPlayer.Player().locale()).toPattern();
+                            String timeLeft = GlobalTranslator.translator().translate("mineral-contest.time_left", mineralPlayer.getPlayer().locale()).toPattern();
 
                             objective.getScore("§7" + timeLeft + ": §b" + minutes + ":" + zero + seconds).setScore(4);
                         }

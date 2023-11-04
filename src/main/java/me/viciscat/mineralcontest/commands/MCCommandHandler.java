@@ -78,14 +78,14 @@ public class MCCommandHandler implements CommandExecutor {
                         return true;
                     }
                     case "team" -> {
-                        MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
+                        MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(player).getMineralTeam();
                         Component teamName = mineralTeam == null ? Component.text("None") : mineralTeam.getTeamName();
                         sender.sendMessage(teamName);
                         sender.sendPlainMessage(Objects.requireNonNull(gameHandler.gameScoreboard.getPlayerTeam(player)).getName());
                         return true;
                     }
                     case "score" -> {
-                        MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
+                        MineralTeam mineralTeam = gameHandler.playerManager.getPlayer(player).getMineralTeam();
                         sender.sendPlainMessage(mineralTeam == null ? "-1" : String.valueOf(mineralTeam.getScore()));
                         return true;
                     }

@@ -3,6 +3,7 @@ package me.viciscat.mineralcontest;
 import io.papermc.paper.event.entity.EntityMoveEvent;
 import me.viciscat.mineralcontest.game.GameHandler;
 import me.viciscat.mineralcontest.game.RespawnPeriod;
+import me.viciscat.mineralcontest.ui.ChestUnlockingUI;
 import me.viciscat.mineralcontest.ui.ClassSelectUI;
 import me.viciscat.mineralcontest.ui.TeamSelectUI;
 import net.kyori.adventure.text.*;
@@ -72,19 +73,10 @@ public class MineralListener implements Listener {
         GameHandler gameHandler = map.get(player.getWorld());
 
         if (inventory.getLocation() == null) return;
-        if (!inventory.getType().equals(InventoryType.ENDER_CHEST)) {
-            if (inventory.getType().equals(InventoryType.CHEST)) {
-                Location arenaChestLocation = new Location(player.getWorld(), 0, gameHandler.groundHeight - 11, 0);
-                if (inventory.getLocation().equals(arenaChestLocation)) {
-                    if (inventory.isEmpty()) {
-                        player.getWorld().getBlockAt(arenaChestLocation).setType(Material.AIR);
-                    }
-                }
-            }
-        } // Is it an EC ?
+        if (!inventory.getType().equals(InventoryType.ENDER_CHEST)) return; // Is it an EC ?
         MineralTeam chestTeam = gameHandler.getTeam(inventory.getLocation());
         if (chestTeam == null) return;
-        MineralTeam playerTeam = gameHandler.playerManager.getPlayer(player).MineralTeam();
+        MineralTeam playerTeam = gameHandler.playerManager.getPlayer(player).getMineralTeam();
         Inventory playerInventory = player.getInventory();
         // Wrong Team
         if (playerTeam == null || chestTeam != playerTeam) {
@@ -138,6 +130,7 @@ public class MineralListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) return;
         ItemStack compass = new ItemStack(Material.COMPASS);
         ItemStack sword = new ItemStack(Material.IRON_SWORD);
+
         GameHandler gameHandler = map.get(player.getWorld());
         if (gameHandler.gamePhase == GameHandler.Phase.GAME) return;
         ItemStack heldItem = player.getInventory().getItemInMainHand();
@@ -159,9 +152,10 @@ public class MineralListener implements Listener {
         Inventory inventory = event.getInventory();
         InventoryHolder holder = inventory.getHolder();
         int rawSlot = event.getRawSlot();
+        GameHandler gameHandler = map.get(player.getWorld());
         if (holder instanceof TeamSelectUI.Holder) {
             // TEAM SELECTION
-            GameHandler gameHandler = map.get(player.getWorld());
+
             event.setCancelled(true);
             if (rawSlot >= 10 && rawSlot <= 16 && rawSlot % 2 == 0) {
                 int teamID = (rawSlot - 10) / 2;
@@ -175,7 +169,7 @@ public class MineralListener implements Listener {
                 }
                 Bukkit.getScheduler().runTask(JavaPlugin.getPlugin(MineralContest.class), () -> TeamSelectUI.openUI(player, gameHandler, inventory));
                 // Leave previous team
-                MineralTeam oldTeam = mineralPlayer.MineralTeam();
+                MineralTeam oldTeam = mineralPlayer.getMineralTeam();
 
                 if (oldTeam != null) {
                     oldTeam.removePlayer(mineralPlayer);
@@ -191,21 +185,24 @@ public class MineralListener implements Listener {
             }
         } else if (holder instanceof ClassSelectUI.Holder) {
             // CLASS SELECTION
-            GameHandler gameHandler = map.get(player.getWorld());
             MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(player);
             event.setCancelled(true);
             int classID = rawSlot - 11;
             if (classID > 4 || classID < 0) return;
             mineralPlayer.ClassString(classes[classID]);
-        } else if (event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.PLAYER) {
+        } else if (gameHandler.gamePhase.equals(GameHandler.Phase.CLASS_SELECTING)) {
+            event.setCancelled(true);
+        }
+        else if (event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.PLAYER) {
             // MINER CLASS OR SOMETHING
             int slot = event.getSlot();
-            GameHandler gameHandler = map.get(player.getWorld());
             MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(player);
             if (!(Objects.equals(mineralPlayer.ClassString(), "miner"))) return;
             if (slot >= 9 && slot <= 17) {
                 event.setCancelled(true);
             }
+        } else if (holder instanceof ChestUnlockingUI.Holder) {
+            event.setCancelled(true);
         }
     }
 
@@ -217,7 +214,7 @@ public class MineralListener implements Listener {
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
         if (event.getEntity() instanceof Player attackedPlayer) {
-            boolean inSameTeam = gameHandler.playerManager.getPlayer(attackedPlayer).MineralTeam() == gameHandler.playerManager.getPlayer(player).MineralTeam();
+            boolean inSameTeam = gameHandler.playerManager.getPlayer(attackedPlayer).getMineralTeam() == gameHandler.playerManager.getPlayer(player).getMineralTeam();
             boolean inPreGame = gameHandler.gamePhase == GameHandler.Phase.PREGAME;
             boolean inPostGame = gameHandler.getSecondsLeft() <= 0;
             if (inSameTeam || inPreGame || inPostGame) {
@@ -407,7 +404,7 @@ public class MineralListener implements Listener {
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (!map.containsKey(player.getWorld())) return;
         GameHandler gameHandler = map.get(player.getWorld());
-        if (gameHandler.isInEnemyCastle(gameHandler.playerManager.getPlayer(player).MineralTeam(), event.getTo())) {
+        if (gameHandler.isInEnemyCastle(gameHandler.playerManager.getPlayer(player).getMineralTeam(), event.getTo())) {
             event.setCancelled(true);
             player.sendMessage(Component.text("C'est pas ton chateau !!", TextColor.color(NamedTextColor.DARK_RED)));
         }

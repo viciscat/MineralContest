@@ -68,7 +68,7 @@ public class MineralTeam implements Comparable<MineralTeam>{
     }
     public float scoreMultiplier = 1;
 
-    private Location arenaLocation;
+    private final Location arenaLocation;
 
 
     public MineralTeam(TranslatableComponent translatableName, BoundingBox territory, Location spawn, Location enderChest, Location arenaSpawn, Team team) {
@@ -83,14 +83,14 @@ public class MineralTeam implements Comparable<MineralTeam>{
 
     public void addPlayer(MineralPlayer player) {
         if (players.size() >= 4) return;
-        if (!player.Player().isOnline()) return;
-        if (playerInTeam(player.PlayerUUID())) return;
-        player.MineralTeam(this);
-        players.add(player.PlayerUUID());
+        if (!player.getPlayer().isOnline()) return;
+        if (playerInTeam(player.getPlayerUUID())) return;
+        player.setMineralTeam(this);
+        players.add(player.getPlayerUUID());
     }
 
     public void removePlayer(MineralPlayer player) {
-        players.remove(player.PlayerUUID());
+        players.remove(player.getPlayerUUID());
     }
 
     public List<UUID> getPlayerUUID() {
@@ -102,7 +102,7 @@ public class MineralTeam implements Comparable<MineralTeam>{
     }
 
     public boolean playerInTeam(MineralPlayer player) {
-        return players.contains(player.PlayerUUID());
+        return players.contains(player.getPlayerUUID());
     }
     public boolean playerInTeam(UUID playerUUID) {
         return players.contains(playerUUID);

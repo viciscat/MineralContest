@@ -18,8 +18,8 @@ public class PreGamePhase {
 
     static void updatePlayerScoreboards(GameHandler game) {
         for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
-            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
-            String teamString = mineralTeam == null ? "None" : LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(mineralTeam.getTeamName(), mineralPlayer.Player().locale())).toUpperCase();
+            MineralTeam mineralTeam = mineralPlayer.getMineralTeam();
+            String teamString = mineralTeam == null ? "None" : LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(mineralTeam.getTeamName(), mineralPlayer.getPlayer().locale())).toUpperCase();
 
             Scoreboard scoreboard = mineralPlayer.PlayerScoreboard();
             Objective objective = scoreboard.getObjective("mineral_contest_gui");

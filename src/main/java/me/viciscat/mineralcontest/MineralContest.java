@@ -2,6 +2,7 @@ package me.viciscat.mineralcontest;
 
 import me.viciscat.mineralcontest.commands.*;
 import me.viciscat.mineralcontest.game.GameHandler;
+import me.viciscat.mineralcontest.listeners.ArenaChestListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -54,6 +55,7 @@ public final class MineralContest extends JavaPlugin {
             throw new RuntimeException(e);
         }
         getServer().getPluginManager().registerEvents(new MineralListener(), this);
+        getServer().getPluginManager().registerEvents(new ArenaChestListener(), this);
         Objects.requireNonNull(getCommand("test2")).setExecutor(new testing2Command());
         Objects.requireNonNull(getCommand("test3")).setExecutor(new testing3Command());
         PluginCommand mainCommand = getCommand("mineralcontest");

@@ -54,7 +54,7 @@ public class RespawnPeriod extends BukkitRunnable {
         if (time == -1) {
             respawningPlayer.setGameMode(GameMode.SURVIVAL);
             MineralPlayer mineralPlayer = gameHandler.playerManager.getPlayer(respawningPlayer);
-            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+            MineralTeam mineralTeam = mineralPlayer.getMineralTeam();
             respawningPlayer.teleport(mineralTeam == null ? new Location(gameHandler.gameWorld, 0, gameHandler.groundHeight + 15, 0) : mineralTeam.getSpawnLocation());
             Inventory playerInventory = respawningPlayer.getInventory();
             if (mineralPlayer.ClassString().equals("miner")) {

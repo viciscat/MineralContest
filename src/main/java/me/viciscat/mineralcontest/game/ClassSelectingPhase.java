@@ -1,8 +1,6 @@
 package me.viciscat.mineralcontest.game;
 
 import me.viciscat.mineralcontest.MineralPlayer;
-import me.viciscat.mineralcontest.MineralTeam;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.scoreboard.Objective;
@@ -33,9 +31,7 @@ public class ClassSelectingPhase {
         int seconds = game.classSelectSecondsLeft % 60;
 
         for (MineralPlayer mineralPlayer: game.playerManager.getPlayers()) {
-            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
-            Locale playerLocale = mineralPlayer.Player().locale();
-            String teamString = mineralTeam == null ? "None" : LegacyComponentSerializer.legacySection().serialize(GlobalTranslator.render(mineralTeam.getTeamName(), playerLocale)).toUpperCase();
+            Locale playerLocale = mineralPlayer.getPlayer().locale();
             String classString = StringUtils.capitalize(GlobalTranslator.translator().translate("mineral-contest.ui.class_select." + mineralPlayer.ClassString(), playerLocale).toPattern());
 
             Scoreboard scoreboard = mineralPlayer.PlayerScoreboard();
@@ -53,7 +49,7 @@ public class ClassSelectingPhase {
                             scoreboard.resetScores(entry);
 
                             String zero = seconds < 10 ? "0" : "";
-                            String startingIn = GlobalTranslator.translator().translate("mineral-contest.start_in", mineralPlayer.Player().locale()).toPattern();
+                            String startingIn = GlobalTranslator.translator().translate("mineral-contest.start_in", mineralPlayer.getPlayer().locale()).toPattern();
 
                             objective.getScore("§7"+ startingIn +": §b" + minutes + ":" + zero + seconds).setScore(4);
                         }

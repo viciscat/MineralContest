@@ -6,6 +6,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -78,9 +79,12 @@ public class GameHandler implements Runnable {
 
     public PlayerManager playerManager = new PlayerManager();
 
+    public ArenaChestHandler arenaChestHandler;
+
 
     public void close() {
         schedulerTask.cancel();
+        arenaChestHandler.end();
     }
 
     private final String prefix = plugin.config.getString("worldNamePrefix", "mineral-contest_");
@@ -97,6 +101,17 @@ public class GameHandler implements Runnable {
         secondsLeft = gameParameters.DURATION;
         nextChest = secondsLeft - random.nextInt(parameters.MIN_SPAWN_DELAY, parameters.MAX_SPAWN_DELAY);
         groundHeight = finalHeight;
+        arenaChestHandler = new ArenaChestHandler(world.getBlockAt(0, groundHeight - 11, 0));
+
+        Team redTeam = gameScoreboard.registerNewTeam("red");
+        Team blueTeam = gameScoreboard.registerNewTeam("blue");
+        Team yellowTeam = gameScoreboard.registerNewTeam("yellow");
+        Team greenTeam = gameScoreboard.registerNewTeam("green");
+
+        redTeam.prefix(Component.text("R ").style(Style.style().color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true)));
+        blueTeam.prefix(Component.text("B ").style(Style.style().color(NamedTextColor.DARK_BLUE).decoration(TextDecoration.BOLD, true)));
+        greenTeam.prefix(Component.text("G ").style(Style.style().color(NamedTextColor.GREEN).decoration(TextDecoration.BOLD, true)));
+        yellowTeam.prefix(Component.text("Y ").style(Style.style().color(NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)));
 
         teams = new MineralTeam[]{
                 new MineralTeam(Component.translatable("mineral-contest.teams.red", NamedTextColor.RED),
@@ -104,28 +119,28 @@ public class GameHandler implements Runnable {
                         new Location(gameWorld, -55, groundHeight+3, 0),
                         new Location(gameWorld, -59, groundHeight+3, 0),
                         new Location(gameWorld, -19d, groundHeight-8, 0.5),
-                        gameScoreboard.registerNewTeam("red")),
+                        redTeam),
                 new MineralTeam(Component.translatable("mineral-contest.teams.blue", NamedTextColor.BLUE),
                         BoundingBox.of(new Location(gameWorld, 49, groundHeight, -9), new Location(gameWorld, 67, groundHeight + 20, 9)),
                         new Location(gameWorld, 55, groundHeight+3, 0),
                         new Location(gameWorld, 59, groundHeight+3, 0),
                         new Location(gameWorld, 20d, groundHeight-8, 0.5),
-                        gameScoreboard.registerNewTeam("blue")),
+                        blueTeam),
                 new MineralTeam(Component.translatable("mineral-contest.teams.yellow", NamedTextColor.YELLOW),
                         BoundingBox.of(new Location(gameWorld, -9, groundHeight, -49), new Location(gameWorld, 9, groundHeight + 20, -67)),
                         new Location(gameWorld, 0, groundHeight+3, -55),
                         new Location(gameWorld, 0, groundHeight+3, -59),
                         new Location(gameWorld, 0.5d, groundHeight-8, -19d),
-                        gameScoreboard.registerNewTeam("yellow")),
+                        yellowTeam),
                 new MineralTeam(Component.translatable("mineral-contest.teams.green", NamedTextColor.GREEN),
                         BoundingBox.of(new Location(gameWorld, 9, groundHeight, 49), new Location(gameWorld, -9, groundHeight + 20, 67)),
                         new Location(gameWorld, 0, groundHeight+3, 55),
                         new Location(gameWorld, 0, groundHeight+3, 59),
                         new Location(gameWorld, 0.5d, groundHeight-8, 20d),
-                        gameScoreboard.registerNewTeam("green")),
+                        greenTeam),
         };
 
-        scoreMap.put(Material.COPPER_INGOT, 4);
+        scoreMap.put(Material.COPPER_INGOT, 3);
         scoreMap.put(Material.IRON_INGOT, 10);
         scoreMap.put(Material.AMETHYST_SHARD, 30);
         scoreMap.put(Material.GOLD_INGOT, 50);
@@ -148,11 +163,11 @@ public class GameHandler implements Runnable {
             if (Objects.equals(mineralPlayer.ClassString(), "none")) {
                 mineralPlayer.ClassString(ClassSelectingPhase.classes[new Random().nextInt(ClassSelectingPhase.classes.length)]);
             }
-            Player player = mineralPlayer.Player();
+            Player player = mineralPlayer.getPlayer();
             player.closeInventory();
             player.getInventory().clear();
             player.setExp(0);
-            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+            MineralTeam mineralTeam = mineralPlayer.getMineralTeam();
             if (mineralTeam != null) {
                 Team team = mineralTeam.getTeam();
                 team.addPlayer(player);
@@ -214,10 +229,10 @@ public class GameHandler implements Runnable {
         gamePhase = Phase.CLASS_SELECTING;
         gameWorld.getWorldBorder().setSize(800);
         for (MineralPlayer mineralPlayer: playerManager.getPlayers()) {
-            Player player = mineralPlayer.Player();
+            Player player = mineralPlayer.getPlayer();
             resetPlayerScoreboard(player);
             player.getInventory().clear();
-            MineralTeam mineralTeam = mineralPlayer.MineralTeam();
+            MineralTeam mineralTeam = mineralPlayer.getMineralTeam();
             if (mineralTeam == null) {
                 player.setGameMode(GameMode.SPECTATOR);
             } else {
@@ -290,12 +305,12 @@ public class GameHandler implements Runnable {
         if (objective == null) return;
 
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        Player player = mineralPlayer.Player();
+        Player player = mineralPlayer.getPlayer();
         // Clear it
         for (String entry : scoreboard.getEntries()) {
             scoreboard.resetScores(entry);
         }
-        MineralTeam team = mineralPlayer.MineralTeam();
+        MineralTeam team = mineralPlayer.getMineralTeam();
         String teamString;
         if (team == null) {
             teamString = "None";
@@ -338,6 +353,15 @@ public class GameHandler implements Runnable {
                 objective.getScore("§7> §f" + wordTeam + ": " + teamString).setScore(2);
                 objective.getScore("    ").setScore(1);
                 objective.getScore("     ").setScore(0);
+
+                // Put everyone in the correct team on each player's "local" scoreboard
+                for (MineralPlayer randomPlayer : playerManager.getPlayers()) {
+                    if (randomPlayer.getMineralTeam() == null) continue;
+                    Team randomPlayerServerTeam = randomPlayer.getMineralTeam().getTeam();
+                    Team playerClientSideTeam = mineralPlayer.PlayerScoreboard().getTeam(randomPlayerServerTeam.getName());
+                    if (playerClientSideTeam == null) continue;
+                    playerClientSideTeam.addPlayer(randomPlayer.getPlayer());
+                }
             }
 
             case GAME -> {
