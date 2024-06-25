@@ -2,6 +2,12 @@
 A recreation of the minigame first seen on Squeezie's gaming channel!
 https://viciscat.github.io/MineralContest/
 
+> [!WARNING]
+> # This project is pretty much DEAD!
+> This was my first large scale project and it's a bit of a mess and works only half the time. I might rewrite it at some point but yeah.
+> 
+> Ceci était mon premier gros projet et c'est un peu le bordel et ca marche la moitié du temps. Je vais peut-etre le reecrire un jour.
+
 
 [Français](#français) | [English](#english) 
 
