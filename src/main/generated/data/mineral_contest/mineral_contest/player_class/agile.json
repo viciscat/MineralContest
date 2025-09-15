@@ -1,0 +1,40 @@
+{
+  "attribute_modifiers": [
+    {
+      "attribute": "minecraft:movement_speed",
+      "modifier": {
+        "amount": 0.2,
+        "id": "mineral_contest:agile",
+        "operation": "add_multiplied_total"
+      }
+    },
+    {
+      "attribute": "minecraft:fall_damage_multiplier",
+      "modifier": {
+        "amount": -1.0,
+        "id": "mineral_contest:agile",
+        "operation": "add_multiplied_total"
+      }
+    }
+  ],
+  "description": [
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.agile.description.1"
+    },
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.agile.description.2"
+    },
+    {
+      "color": "red",
+      "translate": "game.mineral_contest.class.agile.description.3"
+    }
+  ],
+  "icon": "minecraft:feather",
+  "id": "mineral_contest:agile",
+  "kit": "mineral_contest:basic",
+  "name": {
+    "translate": "game.mineral_contest.class.agile"
+  }
+}

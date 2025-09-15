@@ -1,0 +1,266 @@
+{
+  "arena_chest_position": [
+    0,
+    -11,
+    0
+  ],
+  "dimension": "minecraft:overworld",
+  "remove_oceans": true,
+  "spawn_radius": 75,
+  "structures": [
+    {
+      "position": [
+        -21,
+        -14,
+        -21
+      ],
+      "structure_template": "mineral_contest:arena"
+    },
+    {
+      "position": [
+        -68,
+        -1,
+        -10
+      ],
+      "structure_template": "mineral_contest:red_castle"
+    },
+    {
+      "position": [
+        22,
+        -1,
+        -10
+      ],
+      "structure_template": "mineral_contest:blue_castle"
+    },
+    {
+      "position": [
+        -10,
+        -1,
+        -68
+      ],
+      "structure_template": "mineral_contest:yellow_castle"
+    },
+    {
+      "position": [
+        -10,
+        -1,
+        22
+      ],
+      "structure_template": "mineral_contest:green_castle"
+    }
+  ],
+  "teams": [
+    {
+      "arena_spawn": {
+        "pitch": 0.0,
+        "position": [
+          -19.5,
+          -8.5,
+          0.5
+        ],
+        "yaw": 270.0
+      },
+      "color": "red",
+      "gate": {
+        "axis": "x",
+        "height": 4,
+        "open_trigger": {
+          "max": [
+            7.0,
+            4.0,
+            1.5
+          ],
+          "min": [
+            -2.0,
+            -2.0,
+            -1.5
+          ]
+        },
+        "position": [
+          -51.5,
+          3.0,
+          0.5
+        ],
+        "width": 3
+      },
+      "id": "red",
+      "name": {
+        "color": "red",
+        "translate": "game.mineral_contest.team.red"
+      },
+      "prefix": {
+        "bold": true,
+        "color": "red",
+        "translate": "game.mineral_contest.team.red.prefix"
+      },
+      "spawn": {
+        "pitch": 0.0,
+        "position": [
+          -56.5,
+          3.5,
+          0.5
+        ],
+        "yaw": 270.0
+      }
+    },
+    {
+      "arena_spawn": {
+        "pitch": 0.0,
+        "position": [
+          20.5,
+          -8.5,
+          0.5
+        ],
+        "yaw": 90.0
+      },
+      "color": "blue",
+      "gate": {
+        "axis": "x",
+        "height": 4,
+        "open_trigger": {
+          "max": [
+            2.0,
+            4.0,
+            1.5
+          ],
+          "min": [
+            -7.0,
+            -2.0,
+            -1.5
+          ]
+        },
+        "position": [
+          52.5,
+          3.0,
+          0.5
+        ],
+        "width": 3
+      },
+      "id": "blue",
+      "name": {
+        "color": "blue",
+        "translate": "game.mineral_contest.team.blue"
+      },
+      "prefix": {
+        "bold": true,
+        "color": "blue",
+        "translate": "game.mineral_contest.team.blue.prefix"
+      },
+      "spawn": {
+        "pitch": 0.0,
+        "position": [
+          57.5,
+          3.5,
+          0.5
+        ],
+        "yaw": 90.0
+      }
+    },
+    {
+      "arena_spawn": {
+        "pitch": 0.0,
+        "position": [
+          0.5,
+          -8.5,
+          -19.5
+        ],
+        "yaw": 0.0
+      },
+      "color": "yellow",
+      "gate": {
+        "axis": "z",
+        "height": 4,
+        "open_trigger": {
+          "max": [
+            1.5,
+            4.0,
+            7.0
+          ],
+          "min": [
+            -1.5,
+            -2.0,
+            -2.0
+          ]
+        },
+        "position": [
+          0.5,
+          3.0,
+          -51.5
+        ],
+        "width": 3
+      },
+      "id": "yellow",
+      "name": {
+        "color": "yellow",
+        "translate": "game.mineral_contest.team.yellow"
+      },
+      "prefix": {
+        "bold": true,
+        "color": "yellow",
+        "translate": "game.mineral_contest.team.yellow.prefix"
+      },
+      "spawn": {
+        "pitch": 0.0,
+        "position": [
+          0.5,
+          3.5,
+          -56.5
+        ],
+        "yaw": 0.0
+      }
+    },
+    {
+      "arena_spawn": {
+        "pitch": 0.0,
+        "position": [
+          0.5,
+          -8.5,
+          20.5
+        ],
+        "yaw": 180.0
+      },
+      "color": "lime",
+      "gate": {
+        "axis": "z",
+        "height": 4,
+        "open_trigger": {
+          "max": [
+            1.5,
+            4.0,
+            2.0
+          ],
+          "min": [
+            -1.5,
+            -2.0,
+            -7.0
+          ]
+        },
+        "position": [
+          0.5,
+          3.0,
+          52.5
+        ],
+        "width": 3
+      },
+      "id": "green",
+      "name": {
+        "color": "green",
+        "translate": "game.mineral_contest.team.green"
+      },
+      "prefix": {
+        "bold": true,
+        "color": "green",
+        "translate": "game.mineral_contest.team.green.prefix"
+      },
+      "spawn": {
+        "pitch": 0.0,
+        "position": [
+          0.5,
+          3.5,
+          57.5
+        ],
+        "yaw": 180.0
+      }
+    }
+  ]
+}

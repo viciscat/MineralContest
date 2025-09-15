@@ -1,0 +1,52 @@
+{
+  "description": [
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.miner.description.1"
+    },
+    {
+      "color": "red",
+      "translate": "game.mineral_contest.class.miner.description.2"
+    }
+  ],
+  "icon": "minecraft:diamond_pickaxe",
+  "id": "mineral_contest:miner",
+  "kit": {
+    "items": [
+      {
+        "item_stack": {
+          "components": {
+            "minecraft:custom_data": {
+              "mineral_contest:drops_on_death": 0,
+              "mineral_contest:movable": 0
+            },
+            "minecraft:max_stack_size": 1,
+            "minecraft:tooltip_display": {
+              "hide_tooltip": true
+            }
+          },
+          "count": 1,
+          "id": "minecraft:barrier"
+        },
+        "repeat": 9,
+        "slots": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ]
+      }
+    ],
+    "parents": [
+      "mineral_contest:basic"
+    ]
+  },
+  "name": {
+    "translate": "game.mineral_contest.class.miner"
+  }
+}

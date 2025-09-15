@@ -1,0 +1,40 @@
+{
+  "attribute_modifiers": [
+    {
+      "attribute": "minecraft:max_health",
+      "modifier": {
+        "amount": 4.0,
+        "id": "mineral_contest:robust",
+        "operation": "add_value"
+      }
+    },
+    {
+      "attribute": "minecraft:movement_speed",
+      "modifier": {
+        "amount": -0.1,
+        "id": "mineral_contest:robust",
+        "operation": "add_multiplied_total"
+      }
+    }
+  ],
+  "description": [
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.robust.description.1"
+    },
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.robust.description.2"
+    },
+    {
+      "color": "red",
+      "translate": "game.mineral_contest.class.robust.description.3"
+    }
+  ],
+  "icon": "minecraft:diamond_chestplate",
+  "id": "mineral_contest:robust",
+  "kit": "mineral_contest:basic",
+  "name": {
+    "translate": "game.mineral_contest.class.robust"
+  }
+}

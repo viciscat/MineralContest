@@ -1,0 +1,63 @@
+{
+  "gameType.mineral_contest.mineral_contest": "Mineral Contest",
+
+
+  "game.mineral_contest.team.red": "Red",
+  "game.mineral_contest.team.red.prefix": "R ",
+  "game.mineral_contest.team.blue": "Blue",
+  "game.mineral_contest.team.blue.prefix": "B ",
+  "game.mineral_contest.team.yellow": "Yellow",
+  "game.mineral_contest.team.yellow.prefix": "Y ",
+  "game.mineral_contest.team.green": "Green",
+  "game.mineral_contest.team.green.prefix": "G ",
+
+  "game.mineral_contest.class.agile": "Agile",
+  "game.mineral_contest.class.agile.description.1": "- Move 20% faster",
+  "game.mineral_contest.class.agile.description.2": "- No fall damage",
+  "game.mineral_contest.class.agile.description.3": "- Can starve",
+  "game.mineral_contest.class.miner": "Miner",
+  "game.mineral_contest.class.miner.description.1": "- Automatically smelt the ores you mine",
+  "game.mineral_contest.class.miner.description.2": "- Only 2 rows in your inventory",
+  "game.mineral_contest.class.robust": "Robust",
+  "game.mineral_contest.class.robust.description.1": "- Take 15% less damage",
+  "game.mineral_contest.class.robust.description.2": "- 12 hearts",
+  "game.mineral_contest.class.robust.description.3": "- 10% slower",
+  "game.mineral_contest.class.warrior": "Warrior",
+  "game.mineral_contest.class.warrior.description.1": "- Deal 25% more damage",
+  "game.mineral_contest.class.warrior.description.2": "- Only 8 hearts",
+  "game.mineral_contest.class.worker": "Worker",
+  "game.mineral_contest.class.worker.description.1": "- Give your team 25% more points",
+  "game.mineral_contest.class.worker.description.2": "- Only 6 hearts",
+
+
+  "game.mineral_contest.teamItem": "Right click to select a team!",
+  "game.mineral_contest.selectTeam": "Select Team",
+
+  "game.mineral_contest.classItem": "Right click to select a class!",
+  "game.mineral_contest.selectClass": "Select Class",
+  "game.mineral_contest.allChoseClass": "Everyone chose a class! Speeding things up!",
+
+
+  "game.mineral_contest.dead": "You Died!",
+  "game.mineral_contest.respawn": "Respawning in %d seconds...",
+
+  "game.mineral_contest.sidebar.startingIn": "Starting in: %s",
+  "game.mineral_contest.sidebar.timeLeft": "Time Left: %s",
+  "game.mineral_contest.sidebar.score": "Score: %s",
+  "game.mineral_contest.sidebar.booster": "Booster: %s",
+  "gameType.mineral_contest.sidebar.game": "Game",
+  "gameType.mineral_contest.sidebar.team": "Team: %s",
+  "gameType.mineral_contest.sidebar.class": "Class: %s",
+
+  "game.mineral_contest.scores": "The Scores:",
+
+  "game.mineral_contest.chest": "Arena Chest",
+  "game.mineral_contest.chest.in": "Arena Chest appearing in %d seconds",
+  "game.mineral_contest.chest.teleportTeam": "Woosh! You teleported your team to the arena!",
+  "game.mineral_contest.chest.teleported": "Woosh! You got teleported to the arena by %s!",
+  "game.mineral_contest.chest.title": "Arena Chest Soon!",
+  "game.mineral_contest.chest.subTitle": "Do /arena to teleport your team!",
+  "game.mineral_contest.chest.message": "A chest is about to appear in %d seconds! Do /arena to teleport your team!",
+  "game.mineral_contest.chest.alreadyOpening": "Someone is already unlocking this chest!",
+  "game.mineral_contest.chest.couldNotTeleport": "Could not teleport to the arena."
+}

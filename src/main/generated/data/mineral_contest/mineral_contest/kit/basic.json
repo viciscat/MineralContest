@@ -1,0 +1,95 @@
+{
+  "items": [
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 1,
+        "id": "minecraft:iron_helmet"
+      },
+      "slots": "armor.head"
+    },
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 1,
+        "id": "minecraft:iron_chestplate"
+      },
+      "slots": "armor.chest"
+    },
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 1,
+        "id": "minecraft:iron_leggings"
+      },
+      "slots": "armor.legs"
+    },
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 1,
+        "id": "minecraft:iron_boots"
+      },
+      "slots": "armor.feet"
+    },
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 1,
+        "id": "minecraft:iron_sword"
+      },
+      "slots": "hotbar.*"
+    },
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 1,
+        "id": "minecraft:bow"
+      },
+      "slots": "hotbar.*"
+    },
+    {
+      "item_stack": {
+        "count": 16,
+        "id": "minecraft:arrow"
+      },
+      "slots": "hotbar.*"
+    },
+    {
+      "item_stack": {
+        "components": {
+          "minecraft:custom_data": {
+            "mineral_contest:drops_on_death": 0
+          }
+        },
+        "count": 16,
+        "id": "minecraft:cooked_beef"
+      },
+      "slots": "hotbar.*"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "attribute_modifiers": [
+    {
+      "attribute": "minecraft:max_health",
+      "modifier": {
+        "amount": -8.0,
+        "id": "mineral_contest:worker",
+        "operation": "add_value"
+      }
+    }
+  ],
+  "description": [
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.worker.description.1"
+    },
+    {
+      "color": "red",
+      "translate": "game.mineral_contest.class.worker.description.2"
+    }
+  ],
+  "icon": "minecraft:gold_ingot",
+  "id": "mineral_contest:worker",
+  "kit": "mineral_contest:basic",
+  "name": {
+    "translate": "game.mineral_contest.class.worker"
+  }
+}

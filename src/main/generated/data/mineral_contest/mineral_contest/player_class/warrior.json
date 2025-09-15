@@ -1,0 +1,36 @@
+{
+  "attribute_modifiers": [
+    {
+      "attribute": "minecraft:max_health",
+      "modifier": {
+        "amount": -4.0,
+        "id": "mineral_contest:warrior",
+        "operation": "add_value"
+      }
+    },
+    {
+      "attribute": "minecraft:attack_damage",
+      "modifier": {
+        "amount": 0.25,
+        "id": "mineral_contest:warrior",
+        "operation": "add_multiplied_total"
+      }
+    }
+  ],
+  "description": [
+    {
+      "color": "green",
+      "translate": "game.mineral_contest.class.warrior.description.1"
+    },
+    {
+      "color": "red",
+      "translate": "game.mineral_contest.class.warrior.description.2"
+    }
+  ],
+  "icon": "minecraft:diamond_sword",
+  "id": "mineral_contest:warrior",
+  "kit": "mineral_contest:basic",
+  "name": {
+    "translate": "game.mineral_contest.class.warrior"
+  }
+}
