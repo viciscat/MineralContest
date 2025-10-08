@@ -31,6 +31,8 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.number.BlankNumberFormat;
@@ -292,6 +294,7 @@ class MineralContestPlay {
         player.setHealth(player.getMaxHealth());
         player.getHungerManager().setFoodLevel(20);
         player.getHungerManager().setSaturationLevel(20f);
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NIGHT_VISION, StatusEffectInstance.INFINITE, 0, false, false));
     }
 
     private ActionResult onUse(ServerPlayerEntity player, Hand hand, BlockHitResult hitResult) {

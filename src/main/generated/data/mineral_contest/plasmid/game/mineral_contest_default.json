@@ -8,7 +8,7 @@
     "mineral_contest:worker"
   ],
   "custom": {},
-  "duration": 30,
+  "duration": 3600,
   "icon": {
     "count": 1,
     "id": "minecraft:golden_pickaxe"
