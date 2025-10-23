@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.registry.RegistryBuilder;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.plasmid.api.game.config.GameConfig;
 import xyz.nucleoid.plasmid.api.registry.PlasmidRegistryKeys;
 
 public class MineralContestDataGenerator implements DataGeneratorEntrypoint {

@@ -1,8 +1,6 @@
 package io.github.viciscat.mineralcontest.mixin;
 
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.StructureLocator;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.StructureAccessor;

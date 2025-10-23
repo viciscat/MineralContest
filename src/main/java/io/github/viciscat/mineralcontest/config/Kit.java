@@ -2,7 +2,6 @@ package io.github.viciscat.mineralcontest.config;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.viciscat.mineralcontest.MineralContest;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;

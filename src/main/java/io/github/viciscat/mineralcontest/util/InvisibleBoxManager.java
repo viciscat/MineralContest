@@ -6,7 +6,8 @@ import xyz.nucleoid.plasmid.api.game.GameActivity;
 import xyz.nucleoid.plasmid.api.game.GameCloseReason;
 import xyz.nucleoid.plasmid.api.game.event.GameActivityEvents;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InvisibleBoxManager {
 

@@ -2,7 +2,6 @@ package io.github.viciscat.mineralcontest.event;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import xyz.nucleoid.stimuli.event.EventResult;
 import xyz.nucleoid.stimuli.event.StimulusEvent;
 
 public interface EditPlayerDamageEvent {
