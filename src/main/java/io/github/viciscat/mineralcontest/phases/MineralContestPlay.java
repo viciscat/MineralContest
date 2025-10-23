@@ -1,8 +1,6 @@
 package io.github.viciscat.mineralcontest.phases;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import eu.pb4.sidebars.api.lines.SidebarLine;
 import eu.pb4.sidebars.api.lines.SuppliedSidebarLine;
 import io.github.viciscat.mineralcontest.MineralContest;
@@ -76,6 +74,7 @@ import xyz.nucleoid.stimuli.event.world.ExplosionDetonatedEvent;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 class MineralContestPlay {
 
@@ -298,11 +297,11 @@ class MineralContestPlay {
     }
 
     private ActionResult onUse(ServerPlayerEntity player, Hand hand, BlockHitResult hitResult) {
-        BlockEntity entity = player.getWorld().getBlockEntity(hitResult.getBlockPos());
+        BlockEntity entity = player.getEntityWorld().getBlockEntity(hitResult.getBlockPos());
         if (entity == null) return ActionResult.PASS;
-        DataResult<String> result = entity.getComponents().getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).get(Codec.STRING.fieldOf("mineral_contest:ore_chest"));
-        if (!result.isSuccess()) return ActionResult.PASS;
-        GameTeamKey team = new GameTeamKey(result.getOrThrow());
+        Optional<String> result = entity.getComponents().getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).copyNbt().getString("mineral_contest:ore_chest");
+        if (result.isEmpty()) return ActionResult.PASS;
+        GameTeamKey team = new GameTeamKey(result.get());
         if (teamManager.getTeamConfig(team) == null) return ActionResult.PASS;
         player.openHandledScreen(OreChestInventory.createScreenHandler(
                 f -> {

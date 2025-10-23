@@ -1,13 +1,13 @@
 package io.github.viciscat.mineralcontest.util;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import net.minecraft.entity.EntityPosition;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.InteractionEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.player.PlayerPosition;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -56,11 +56,11 @@ public class InvisibleBox implements Closeable {
         players.retainAll(worldPlayers.stream().map(PlayerRef::of).toList());
         for (ServerPlayerEntity worldPlayer : worldPlayers) {
             if (!players.contains(PlayerRef.of(worldPlayer))) {
-                if (box.squaredMagnitude(worldPlayer.getPos()) < 5 * 5) {
+                if (box.squaredMagnitude(worldPlayer.getEntityPos()) < 5 * 5) {
                     sendHitbox(worldPlayer);
                 } else continue;
             } else {
-                if (box.squaredMagnitude(worldPlayer.getPos()) > 5 * 5) {
+                if (box.squaredMagnitude(worldPlayer.getEntityPos()) > 5 * 5) {
                     removeHitbox(worldPlayer);
                     continue;
                 }
@@ -91,7 +91,7 @@ public class InvisibleBox implements Closeable {
             playerBox = playerBox.contract(SHULKER_SIZE / 2);
             Vec3d vec3d = getClosestPointToPlayer(worldPlayer, playerBox);
             // TODO do not send that if the coordinates are the same
-            worldPlayer.networkHandler.sendPacket(new EntityPositionSyncS2CPacket(marker.getId(), new PlayerPosition(vec3d, Vec3d.ZERO, 0, 0), false));
+            worldPlayer.networkHandler.sendPacket(new EntityPositionSyncS2CPacket(marker.getId(), new EntityPosition(vec3d, Vec3d.ZERO, 0, 0), false));
 
         }
     }
@@ -104,7 +104,7 @@ public class InvisibleBox implements Closeable {
 
     // calculate closest point to player that is inside the box
     private Vec3d getClosestPointToPlayer(ServerPlayerEntity player, Box box) {
-        Vec3d playerPos = player.getPos().add(0, SHULKER_SIZE / 2, 0).add(player.getVelocity().multiply(0.5));
+        Vec3d playerPos = player.getEntityPos().add(0, SHULKER_SIZE / 2, 0).add(player.getVelocity().multiply(0.5));
         double x = Math.max(box.minX, Math.min(playerPos.x, box.maxX));
         double y = Math.max(box.minY, Math.min(playerPos.y, box.maxY));
         double z = Math.max(box.minZ, Math.min(playerPos.z, box.maxZ));
@@ -114,7 +114,7 @@ public class InvisibleBox implements Closeable {
     private void sendHitbox(ServerPlayerEntity player) {
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(hitbox, 0, BlockPos.ofFloored(box.getCenter())));
         player.networkHandler.sendPacket(new EntitySpawnS2CPacket(marker, 0, BlockPos.ofFloored(box.getCenter())));
-        hitbox.startRiding(marker, true);
+        hitbox.startRiding(marker, true, true);
         player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(hitbox.getId(), hitbox.getDataTracker().getChangedEntries()));
         player.networkHandler.sendPacket(new EntityTrackerUpdateS2CPacket(marker.getId(), marker.getDataTracker().getChangedEntries()));
         player.networkHandler.sendPacket(new EntityAttributesS2CPacket(hitbox.getId(), COLLECTION));

@@ -48,7 +48,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Pe
     @Override
     public final void mineral_contest$removeWorldBorder() {
         worldBorder = null;
-        networkHandler.sendPacket(new WorldBorderInitializeS2CPacket(getWorld().getWorldBorder()));
+        networkHandler.sendPacket(new WorldBorderInitializeS2CPacket(getEntityWorld().getWorldBorder()));
     }
 
     @Override

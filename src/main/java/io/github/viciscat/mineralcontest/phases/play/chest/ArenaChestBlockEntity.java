@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.ContainerUser;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -55,7 +56,7 @@ public class ArenaChestBlockEntity extends BlockEntity implements NamedScreenHan
         super(TYPE, pos, state);
         lootInventory = new SimpleInventory(27){
             @Override
-            public void onClose(PlayerEntity player) {
+            public void onClose(ContainerUser player) {
                 super.onClose(player);
                 onLootInventoryClosed();
             }

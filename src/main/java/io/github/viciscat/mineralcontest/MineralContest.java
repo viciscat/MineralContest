@@ -124,7 +124,7 @@ public class MineralContest implements ModInitializer {
             gameActivity.getGameSpace().setAttachment(Attachments.MAIN_WORLD, serverWorld);
             gameActivity.listen(EntitySpawnEvent.EVENT, entity -> {
                 if (entity.getType().getSpawnGroup() == SpawnGroup.MISC) return EventResult.PASS;
-                Vec3d pos = entity.getPos();
+                Vec3d pos = entity.getEntityPos();
                 int radius = context.config().mapConfig().value().spawnRadius() + 2;
                 return pos.x * pos.x + pos.z * pos.z < radius * radius ? EventResult.DENY : EventResult.PASS;
             });

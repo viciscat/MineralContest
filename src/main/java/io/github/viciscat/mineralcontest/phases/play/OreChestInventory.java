@@ -3,6 +3,7 @@ package io.github.viciscat.mineralcontest.phases.play;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
+import net.minecraft.entity.ContainerUser;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -37,8 +38,8 @@ public class OreChestInventory extends SimpleInventory {
     }
 
     @Override
-    public void onClose(PlayerEntity player) {
-        super.onClose(player);
+    public void onClose(ContainerUser user) {
+        super.onClose(user);
         float score = 0;
         for (ItemStack stack : this) {
             if (stack.isEmpty()) continue;
@@ -46,7 +47,7 @@ public class OreChestInventory extends SimpleInventory {
             if (itemWorth.containsKey(stack.getItem())) {
                 score += itemWorth.getFloat(stack.getItem()) * stack.getCount();
             } else {
-                player.giveOrDropStack(stack);
+                user.asLivingEntity().giveOrDropStack(stack);
             }
         }
         scoreAdder.accept(score);

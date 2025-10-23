@@ -55,7 +55,7 @@ public record TeamConfig(GameTeamKey id,
 
         public void teleport(ServerPlayerEntity player, Vec3d offset) {
             Vec3d pos = pos().add(offset);
-            player.teleport(player.getWorld(), pos.x, pos.y, pos.z, Set.of(), yaw(), pitch(), true);
+            player.teleport(player.getEntityWorld(), pos.x, pos.y, pos.z, Set.of(), yaw(), pitch(), true);
         }
     }
 

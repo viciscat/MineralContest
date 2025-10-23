@@ -6,8 +6,10 @@ import io.github.viciscat.mineralcontest.util.Attachments;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.datafixer.Schemas;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,6 +19,7 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.text.Text;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.path.SymlinkValidationException;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -80,15 +83,16 @@ public class DisconnectManager {
                 userData = server.getSaveProperties().getPlayerData();
             }
 
-            ReadView playerData;
-            if (server.isHost(player.getGameProfile()) && userData != null) {
-                playerData = NbtReadView.create(ErrorReporter.EMPTY, player.getRegistryManager(), userData);
-                player.readData(playerData);
+            NbtCompound playerData;
+            PlayerConfigEntry playerConfigEntry = new PlayerConfigEntry(player.getGameProfile());
+            if (server.isHost(playerConfigEntry) && userData != null) {
+                playerData = userData;
+                player.readData(NbtReadView.create(ErrorReporter.EMPTY, player.getRegistryManager(), playerData));
             } else {
-                playerData = this.playerSaveHandler.loadPlayerData(player, ErrorReporter.EMPTY).orElse(null);
+                playerData = this.playerSaveHandler.loadPlayerData(playerConfigEntry).orElse(null);
             }
 
-            var dimension = playerData != null ? playerData.read("Dimension", World.CODEC).orElse(World.OVERWORLD) : null;
+            var dimension = playerData != null ? playerData.get("Dimension", World.CODEC).orElse(World.OVERWORLD) : null;
 
             var world = server.getWorld(dimension);
             if (world == null) {
@@ -97,7 +101,7 @@ public class DisconnectManager {
 
             player.setServerWorld(world);
 
-            player.readGameModeData(playerData);
+            player.changeGameMode(playerData.get("playerGameType", GameMode.INDEX_CODEC).orElse(GameMode.SURVIVAL));
             ServerPlayNetworkHandler networkHandler = player.networkHandler;
             networkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
             networkHandler.syncWithPlayerPosition();

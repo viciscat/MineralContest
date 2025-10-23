@@ -76,7 +76,7 @@ public class GateEntity extends Entity implements PolymerEntity {
                 new Vec3d(axis == Direction.Axis.X ? 3 : width/2d, height, axis == Direction.Axis.Z ? 3 : width/2d)
         );
         for (int i = 0; i < width * height; i++) {
-            DisplayEntity.BlockDisplayEntity blockDisplay = new TemporaryBlockDisplay(EntityType.BLOCK_DISPLAY, getWorld());
+            DisplayEntity.BlockDisplayEntity blockDisplay = new TemporaryBlockDisplay(EntityType.BLOCK_DISPLAY, getEntityWorld());
             blocks.add(blockDisplay);
             this.state = Blocks.OAK_FENCE.getDefaultState()
                     .with(HorizontalConnectingBlock.NORTH, !axis.test(Direction.NORTH))
@@ -89,7 +89,7 @@ public class GateEntity extends Entity implements PolymerEntity {
             blockDisplay.setDisplayWidth(1);
             blockDisplay.setDisplayHeight(1);
             blockDisplay.setTransformation(new AffineTransformation(new Vector3f(-0.5f, 0, -0.5f),null, null, null));
-            getWorld().spawnEntity(blockDisplay);
+            getEntityWorld().spawnEntity(blockDisplay);
         }
         positionEntities();
     }
@@ -113,7 +113,7 @@ public class GateEntity extends Entity implements PolymerEntity {
     @Override
     public void tick() {
         if (firstUpdate) initialize();
-        List<ServerPlayerEntity> entities = getWorld().getEntitiesByType(TypeFilter.instanceOf(ServerPlayerEntity.class), openTrigger.offset(getPos()), opensGate.and(this::isLookingAt).and(player -> !player.isSpectator()));
+        List<ServerPlayerEntity> entities = getEntityWorld().getEntitiesByType(TypeFilter.instanceOf(ServerPlayerEntity.class), openTrigger.offset(getEntityPos()), opensGate.and(this::isLookingAt).and(player -> !player.isSpectator()));
         if (entities.isEmpty()) {
             currentHeight -= SPEED * 1.5f;
         } else {
@@ -142,7 +142,7 @@ public class GateEntity extends Entity implements PolymerEntity {
             );
             display.setBlockState(displayY >= height ? Blocks.AIR.getDefaultState() : state);
         }
-        Box boundingBox = calculateDefaultBoundingBox(getPos());
+        Box boundingBox = calculateDefaultBoundingBox(getEntityPos());
         setBoundingBox(boundingBox);
         hitbox.box = boundingBox;
     }
