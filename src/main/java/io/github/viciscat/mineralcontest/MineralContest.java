@@ -9,7 +9,6 @@ import io.github.viciscat.mineralcontest.config.MapConfig;
 import io.github.viciscat.mineralcontest.config.PlayerClass;
 import io.github.viciscat.mineralcontest.generation.MCChunkGenerator;
 import io.github.viciscat.mineralcontest.hacks.OceanRemoving;
-import io.github.viciscat.mineralcontest.hacks.PerWorldBorderListener;
 import io.github.viciscat.mineralcontest.phases.MineralContestWaiting;
 import io.github.viciscat.mineralcontest.phases.play.chest.ArenaChestBlock;
 import io.github.viciscat.mineralcontest.phases.play.chest.ArenaChestBlockEntity;
@@ -119,7 +118,7 @@ public class MineralContest implements ModInitializer {
                 .setDimensionType(options.dimensionTypeEntry());
 
         return context.openWithWorld(config, (gameActivity, serverWorld) -> {
-            serverWorld.getWorldBorder().addListener(new PerWorldBorderListener(serverWorld));
+            context.server().getPlayerManager().setMainWorld(serverWorld);
             gameActivity.getGameSpace().setAttachment(Attachments.CONFIG, context.config());
             gameActivity.getGameSpace().setAttachment(Attachments.MAIN_WORLD, serverWorld);
             gameActivity.listen(EntitySpawnEvent.EVENT, entity -> {
